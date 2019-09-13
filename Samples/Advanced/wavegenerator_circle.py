@@ -6,15 +6,15 @@ from time import sleep
 
 from pipython import GCSDevice, pitools
 
-CONTROLLERNAME = 'C-887'
-STAGES = None  # set something like ('M-122.2DD', 'M-122.2DD') if your stages need CST
-REFMODE = ('FRF',)  # reference first axis or hexapod
+CONTROLLERNAME = 'E-712'
+STAGES = None  # this controller does not need a 'stages' setting
+REFMODE = None
 
 NUMPOINTS = 1000  # number of points for one sine period as integer
 STARTPOS = (0.0, 0.0)  # start position of the circular motion as float for both axes
-AMPLITUDE = (1.0, 1.0)  # amplitude of the circular motion as float for both axes
-NUMCYLES = 10  # number of cycles for wave generator output
-TABLERATE = 10  # duration of a wave table point in multiples of servo cycle times as integer
+AMPLITUDE = (1, 0.1)  # amplitude of the circular motion as float for both axes
+NUMCYLES = 5  # number of cycles for wave generator output
+TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
 
 
 def main():
@@ -48,15 +48,15 @@ def runwavegen(pidevice):
         pidevice.WGC(wavegens, [NUMCYLES] * len(wavegens))
     if pidevice.HasWTR():  # you can remove this code block if your controller does not support WTR()
         print('set wave table rate to {} for wave generators {}'.format(TABLERATE, wavegens))
-        pidevice.WTR(wavegens, [TABLERATE] * len(wavegens), interpol=[0] * len(wavegens))
-    startpos = (STARTPOS[0], STARTPOS[1] + AMPLITUDE[1] / 2.0)
-    print('move axes {} to their start positions {}'.format(pidevice.axes[:2], startpos))
-    pidevice.MOV(pidevice.axes[:2], startpos)
+#         pidevice.WTR(wavegens, [TABLERATE] * len(wavegens), interpol=[0] * len(wavegens))
+#     startpos = (STARTPOS[0], STARTPOS[1] + AMPLITUDE[1] / 2.0)
+#     print('move axes {} to their start positions {}'.format(pidevice.axes[:2], startpos))
+#     pidevice.MOV(pidevice.axes[:2], startpos)
     pitools.waitontarget(pidevice, pidevice.axes[:2])
     print('start wave generators {}'.format(wavegens))
-    pidevice.WGO(wavegens, mode=[1] * len(wavegens))
+#     pidevice.WGO(wavegens, mode=[1] * len(wavegens))
     while any(list(pidevice.IsGeneratorRunning(wavegens).values())):
-        print '.',
+        print ('.')
         sleep(1.0)
     print('\nreset wave generators {}'.format(wavegens))
     pidevice.WGO(wavegens, mode=[0] * len(wavegens))

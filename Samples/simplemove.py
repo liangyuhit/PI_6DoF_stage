@@ -73,6 +73,7 @@ def main():
 
         for _ in range(5):
             targets = [uniform(rmin, rmax) for (rmin, rmax) in ranges]
+            print(targets[0], targets[1])
             print('move stages...')
 
             # The GCS commands qTMN() and qTMX() used above are query commands.

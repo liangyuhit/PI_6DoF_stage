@@ -9,9 +9,11 @@ except ImportError:
 
 from pipython import GCSDevice, datarectools, pitools
 
-CONTROLLERNAME = 'C-884'
-STAGES = ('M-122.2DD',)  # connect stages to axes
-REFMODE = ('FRF',)  # reference the connected stages
+CONTROLLERNAME = 'E-712'
+# STAGES = ('M-122.2DD',)  # connect stages to axes
+# REFMODE = ('FRF',)  # reference the connected stages
+STAGES = None  # connect stages to axes
+REFMODE = None  # reference the connected stages
 
 NUMVALUES = 1024  # number of data sets to record as integer
 RECRATE = 2000  # number of recordings per second, i.e. in Hz
@@ -38,11 +40,11 @@ def readdatarecorder(pidevice):
     drec.samplefreq = RECRATE
     print('data recorder rate: {:.2f} Hz'.format(drec.samplefreq))
     drec.options = (datarectools.RecordOptions.ACTUAL_POSITION_2, datarectools.RecordOptions.COMMANDED_POSITION_1)
-    drec.sources = pidevice.axes[0]
+    drec.sources = pidevice.axes[1]
     drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
     drec.arm()
-    print('move stage on axis {}...'.format(pidevice.axes[0]))
-    pidevice.MVR(pidevice.axes[0], 0.1)
+    print('move stage on axis {}...'.format(pidevice.axes[1]))
+    pidevice.MVR(pidevice.axes[1], 0.01)
     return drec.getdata()
 
 
