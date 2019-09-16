@@ -17,7 +17,7 @@ cpu_time.append(time.time())
 STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 NUMVALUES = 1000  # number of data sets to record as integer
-RECRATE = 2000  # number of recordings per second, i.e. in Hz
+RECRATE = 50  # number of recordings per second, i.e. in Hz
 
 
 NUMPOINTS = 1000  # number of points for one sine period as integer
