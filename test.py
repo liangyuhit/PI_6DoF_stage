@@ -16,8 +16,8 @@ cpu_time.append(time.time())
 # CONTROLLERNAME = 'E-712'
 STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
-NUMVALUES = 1000  # number of data sets to record as integer
-RECRATE = 50  # number of recordings per second, i.e. in Hz
+NUMVALUES = 500  # number of data sets to record as integer
+RECRATE = 500  # number of recordings per second, i.e. in Hz
 
 
 NUMPOINTS = 1000  # number of points for one sine period as integer
@@ -43,18 +43,15 @@ with GCSDevice('E-712') as pidevice:
     drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
     drec.arm()
     
-    print(pidevice.qDRT())
-    
-    
-    
+    print(pidevice.qDRT())    
     
     wavegens = (1, 2)
     wavetables = (1, 2)
  
     pidevice.WAV_LIN(table=wavetables[0], firstpoint=0, numpoints=NUMPOINTS, append='X',
                      speedupdown=100, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
-#     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=NUMPOINTS, numpoints=NUMPOINTS, append='X',
-#                        center=NUMPOINTS / 2, amplitude=AMPLITUDE[1], offset=STARTPOS[1], seglength=NUMPOINTS)
+#     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=0, numpoints=NUMPOINTS, append='X',
+#                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
     pitools.waitonready(pidevice)
     if pidevice.HasWSL():  # you can remove this code block if your controller does not support WSL()
         print('connect wave generators {} to wave tables {}'.format(wavegens, wavetables))
@@ -75,7 +72,7 @@ with GCSDevice('E-712') as pidevice:
         print ('.')
         sleep(1.0)
     print('done')
-     
+    pidevice.WGO(wavegens, mode=[0] * len(wavegens))
      
 #     pidevice.MVR('2', 0.01) ### y = 2
 #     
@@ -83,8 +80,8 @@ with GCSDevice('E-712') as pidevice:
   
     y_pos, z_rot, x_rot = data[0], data[1], data[2]
       
-    samp_time = int(header['NDATA'])/RECRATE
-    n_data = int(header['NDATA'])
+    samp_time = NUMVALUES/RECRATE
+    n_data = NUMVALUES
     print('Sampling Rate = ', RECRATE)
     print('Data length = ', n_data)
     print('Time = ', samp_time)

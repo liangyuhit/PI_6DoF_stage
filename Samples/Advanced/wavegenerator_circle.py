@@ -54,7 +54,7 @@ def runwavegen(pidevice):
 #     pidevice.MOV(pidevice.axes[:2], startpos)
     pitools.waitontarget(pidevice, pidevice.axes[:2])
     print('start wave generators {}'.format(wavegens))
-#     pidevice.WGO(wavegens, mode=[1] * len(wavegens))
+    pidevice.WGO(wavegens, mode=[1] * len(wavegens))
     while any(list(pidevice.IsGeneratorRunning(wavegens).values())):
         print ('.')
         sleep(1.0)
