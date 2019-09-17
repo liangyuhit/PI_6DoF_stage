@@ -14,10 +14,10 @@ STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 
 # Wave_length = 500
-NUMVALUES = 500  # number of data sets to record as integer
-RECRATE = 100  # number of recordings per second, i.e. in Hz
+NUMVALUES = 700  # number of data sets to record as integer
+RECRATE = 50  # number of recordings per second, i.e. in Hz
 
-NUMPOINTS = 30000  # number of points for one sine period as integer
+NUMPOINTS = 3000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
 AMPLITUDE = 10  # amplitude of the circular motion as float for both axes
 NUMCYLES = 2  # number of cycles for wave generator output
@@ -35,34 +35,34 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     print('connected: {}'.format(pidevice.qIDN().strip()))
     print('initialize connected stages...')
     pitools.startup(pidevice, STAGES, REFMODE)
-#     IDN = pidevice.qIDN()
-#     print('IDN: ', IDN)
-#     print('Servo Status: ', pidevice.qSVO())
-    
-    
+    IDN = pidevice.qIDN()
+    print('IDN: ', IDN)
+    print('Servo Status: ', pidevice.qSVO())
+    pidevice.WGO(wavegens, mode=[0]*len(wavegens))
     '''
         Auto-Zero
     '''
 #     pidevice.ATZ({1:0, 2:0, 4:0})
 #     time.sleep(5)
-
+    '''
+        Turn on control loop
+    '''
+    pidevice.SVO({'1':1,'2':1,'3':1,'4':1,'5':1,'6':1})
+#     print('Servo Status: ', pidevice.qSVO())
     '''
         Data Recording Configuration
     '''
-
     drec = datarectools.Datarecorder(pidevice)
     drec.numvalues = NUMVALUES
     drec.samplefreq = RECRATE
     print('data recorder rate: {:.2f} Hz'.format(drec.samplefreq))
     drec.options = (datarectools.RecordOptions.ACTUAL_POSITION_2)
     drec.sources = ('2', '3', '5') ### 2=y=lenth 3=rot_z=hor_angle, 5=rot_x=ver_angle
-#     drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
-    drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
+    drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
+#     drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
     drec.arm()
     print(pidevice.qDRT())
-
-    
-#   
+    print('Sampling Freq. = ', drec.samplefreq)
 
     '''
         Wave Generator & Trigger Configuration
@@ -71,51 +71,54 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     Servo_update_time = pidevice.qSPA(items=1, params=0x0E000200)[1][234881536]### 0x0E000200
 #     print('Servo update time: /s', Servo_update_time)
       
-#     pidevice.WAV_LIN(table=1, firstpoint=1, numpoints=Wave_length, append='X', speedupdown=3, amplitude=10, offset=0, seglength=Wave_length)
-#     pidevice.WAV_LIN(table=wavetables[0], firstpoint=0, numpoints=NUMPOINTS, append='X',
-#                     speedupdown=100, amplitude=AMPLITUDE, offset=0, seglength=NUMPOINTS)
-    pidevice.WAV_SIN_P(table=wavetables[0], firstpoint=0, numpoints=NUMPOINTS, append='X',
-                       center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
-#     pidevice.TWC()
-#     for i in range(Wave_length//300+1): ### 1kHz~15; 48Hz~300
-#         pidevice.TWS(lines=2, points=1+300*i, switches=1)
-#   
-#     pidevice.CTO(lines=2, params=1, values=0.1)
-# #     pidevice.CTO(lines=2, params=2, values=2)
-#     pidevice.CTO(lines=2, params=3, values=9)
-#     Trig_conf = pidevice.qCTO()[2] ### Y_axis=2
-#     Trig_step = Trig_conf[1]
-#     Trig_line = Trig_conf[2]
-#     Trig_mode = Trig_conf[3]
-# #     print(Trig_conf)
-#     print('Trigger step = ', float(Trig_step))
-#     print('Trigger line = ', Trig_line)
-#     print('Trigger mode = ', Trig_mode)
+#     pidevice.WAV_LIN(table=1, firstpoint=1, numpoints=NUMPOINTS, append='X', speedupdown=NUMPOINTS//10, amplitude=10, offset=0, seglength=NUMPOINTS)
+    pidevice.WAV_LIN(table=wavetables[1], firstpoint=0, numpoints=NUMPOINTS, append='X',
+                    speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=0, seglength=NUMPOINTS)
+#     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
+#                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
+    pidevice.WSL(wavegens, wavetables)
+    pidevice.WGC(wavegens, [NUMCYLES]*len(wavegens))
+    pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
     
+    pidevice.TWC()
+    for i in range(NUMPOINTS//3+1): ### 1kHz~15; 48Hz~300
+        pidevice.TWS(lines=2, points=1+3*i, switches=1)
+    
+    pidevice.CTO(lines=2, params=1, values=0.1)
+#     pidevice.CTO(lines=2, params=2, values=2)
+    pidevice.CTO(lines=2, params=3, values=9)
+    Trig_conf = pidevice.qCTO()[2] ### Y_axis=2
+    Trig_step = Trig_conf[1]
+    Trig_line = Trig_conf[2]
+    Trig_mode = Trig_conf[3]
+#     print(Trig_conf)
+    print('Trigger step = ', float(Trig_step))
+    print('Trigger line = ', Trig_line)
+    print('Trigger mode = ', Trig_mode)
+     
 #     print('Data recorder options: ', pidevice.qHDR())
-    
-#     pidevice.DRC(tables=1, sources='2', options=2)
-#     pidevice.DRC(tables=2, sources='3', options=2)
-#     pidevice.DRC(tables=3, sources='5', options=2)
-#     print('Data recorder configuration: ', pidevice.qDRC())
-#  
-# #     pidevice.DRT(tables=1, sources='1', values=1)
+     
+    pidevice.DRC(tables=1, sources='2', options=2)
+    pidevice.DRC(tables=2, sources='3', options=2)
+    pidevice.DRC(tables=3, sources='5', options=2)
+    print('Data recorder configuration: ', pidevice.qDRC())
+  
+#     pidevice.DRT(tables=1, sources='1', values=1)
 #     print('Data recorder TriggerSource: ', pidevice.qDRT())
     pitools.waitonready(pidevice)
-    pidevice.WSL(wavegens, wavetables)
-    pidevice.WGC(wavegens, [NUMCYLES] * len(wavegens))
-    pidevice.WTR(wavegens=1, tablerates=1, interpol=1)
-
-#     print(pidevice.qWTR(wavegens=2))
     
+#     Table_rate = pidevice.qSPA(items=1, params=0x13000109)[1][318767369] ###0x13000109
+#     print(Table_rate)
+#     print(pidevice.qWTR(wavegens=1))
     pitools.waitontarget(pidevice, '2')
-    pidevice.WGO(wavegens, mode=[1]* len(wavegens))
+    print('Servo Status: ', pidevice.qSVO())
+    pidevice.WGO(wavegens, mode=[1]*len(wavegens))
     while any(list(pidevice.IsGeneratorRunning(1).values())):
         print ('.')
         time.sleep(1.0)
     print('done')
     pidevice.WGO(wavegens, mode=[0]*len(wavegens))
- 
+
 #     time.sleep(10.0)
 #     pidevice.WGO(wavegens=1, mode=0)
     
@@ -146,9 +149,9 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     '''
     
     header, data = drec.getdata()
-  
+   
     y_pos, z_rot, x_rot = data[0], data[1], data[2]
-      
+       
     samp_time = NUMVALUES/RECRATE
     n_data = NUMVALUES
     print('Sampling Rate = ', RECRATE)
