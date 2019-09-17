@@ -3,6 +3,7 @@
 	<name>PI_6Dof_stage</name>
 	<comment></comment>
 	<projects>
+		<project>Tilt_Interferometer</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

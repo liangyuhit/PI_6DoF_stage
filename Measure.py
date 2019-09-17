@@ -8,20 +8,32 @@ from pipython import GCSDevice, datarectools, pitools, gcscommands
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import datetime
+from File_name_define import PI_name, name
+
+now = datetime.datetime.now()
+
+def Export_Data(file_name, header, out_str):
+    print('Writing Data')
+    with open(file_name,'w') as fid: ######################################################################################
+        fid.writelines(header)
+        fid.writelines(out_str)
+    print('Finish Writing')
+    return
 
 CONTROLLERNAME = 'E-712'
 STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 
 # Wave_length = 500
-NUMVALUES = 700  # number of data sets to record as integer
+NUMVALUES = 600  # number of data sets to record as integer
 RECRATE = 50  # number of recordings per second, i.e. in Hz
 
-NUMPOINTS = 3000  # number of points for one sine period as integer
+NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
 AMPLITUDE = 10  # amplitude of the circular motion as float for both axes
-NUMCYLES = 2  # number of cycles for wave generator output
-TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
+NUMCYLES = 1  # number of cycles for wave generator output
+TABLERATE = 5  # duration of a wave table point in multiples of servo cycle times as integer
 
 wavegens = (1, 2)
 wavetables = (1, 2)
@@ -72,7 +84,7 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     print('Servo update time: /s', Servo_update_time)
       
 #     pidevice.WAV_LIN(table=1, firstpoint=1, numpoints=NUMPOINTS, append='X', speedupdown=NUMPOINTS//10, amplitude=10, offset=0, seglength=NUMPOINTS)
-    pidevice.WAV_LIN(table=wavetables[1], firstpoint=0, numpoints=NUMPOINTS, append='X',
+    pidevice.WAV_LIN(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
                     speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=0, seglength=NUMPOINTS)
 #     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
 #                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
@@ -81,8 +93,8 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
     
     pidevice.TWC()
-    for i in range(NUMPOINTS//3+1): ### 1kHz~15; 48Hz~300
-        pidevice.TWS(lines=2, points=1+3*i, switches=1)
+    for i in range(NUMPOINTS//60+1): ### 1kHz~15; 48Hz~300
+        pidevice.TWS(lines=2, points=1+60*i, switches=1)
     
     pidevice.CTO(lines=2, params=1, values=0.1)
 #     pidevice.CTO(lines=2, params=2, values=2)
@@ -105,21 +117,25 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
   
 #     pidevice.DRT(tables=1, sources='1', values=1)
 #     print('Data recorder TriggerSource: ', pidevice.qDRT())
-    pitools.waitonready(pidevice)
+#     pitools.waitonready(pidevice)
     
 #     Table_rate = pidevice.qSPA(items=1, params=0x13000109)[1][318767369] ###0x13000109
 #     print(Table_rate)
 #     print(pidevice.qWTR(wavegens=1))
     pitools.waitontarget(pidevice, '2')
     print('Servo Status: ', pidevice.qSVO())
-    pidevice.WGO(wavegens, mode=[1]*len(wavegens))
-    while any(list(pidevice.IsGeneratorRunning(1).values())):
+    
+    '''
+        Notice the Axis No.2!!!!
+    '''
+    pidevice.WGO(wavegens[1], mode=[1])
+    while any(list(pidevice.IsGeneratorRunning(wavegens[1]).values())):
         print ('.')
         time.sleep(1.0)
     print('done')
-    pidevice.WGO(wavegens, mode=[0]*len(wavegens))
+    pidevice.WGO(wavegens[1], mode=[0])
 
-#     time.sleep(10.0)
+#     time.sleep(2.0)
 #     pidevice.WGO(wavegens=1, mode=0)
     
     '''
@@ -175,7 +191,28 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     print('Data length = ', n_data)
 #     print('Time = ', samp_time)
 #     print(len(y_pos))
-    
+
+
+
+''' 
+    保存文件 Exporting TXT
+'''
+header = ['%s\n' %(name+'_PI'),
+      'Local current time : %s\n' %now.strftime("%Y-%m-%d %H:%M:%S"),
+      'Fs = %e (Hz)\n' %RECRATE,##########################################################################################################
+      'Record time: %e (s)\n' %samp_time,############################################################################################
+      'Frame Number = %i\n' %NUMVALUES,############################################################################################
+      'Channel_1: Position /um \n',############################################################################################
+      'Channel_2: Hor_Angle /urad \n',############################################################################################
+      'Channel_3: ver_Angle /urad \n',############################################################################################
+      'Channel_4: xxx \n',############################################################################################
+      '-------------------------------------------------\n',
+      ]
+out_str = ['%f, %f, %f\n' %(y_pos[i], z_rot[i], x_rot[i]) for i in range(NUMVALUES)]
+Export_Data(PI_name, header, out_str)
+print('TXT file saved')
+
+
 plt.figure(1)
 t = np.linspace(0, samp_time, num=n_data)
 plt.subplot(2,1,1)

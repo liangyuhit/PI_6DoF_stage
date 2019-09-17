@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//Example/fastalign.py=utf-8
+encoding//PIPython/gcscommands.py=utf-8
 encoding//Samples/Advanced/wavegenerator_circle.py=utf-8
 encoding//Samples/Advanced/wavegenerator_pnt.py=utf-8
 encoding//Samples/connect_daisychain.py=utf-8
@@ -7,5 +8,8 @@ encoding//Samples/connect_enumerate.py=utf-8
 encoding//Samples/datarecorder.py=utf-8
 encoding//Samples/quickstart.py=utf-8
 encoding//Samples/simplemove.py=utf-8
+encoding/Control.py=utf-8
+encoding/File_name_define.py=utf-8
+encoding/Measure.py=utf-8
+encoding/Readout.py=utf-8
 encoding/test.py=utf-8
-encoding/test_own.py=utf-8
