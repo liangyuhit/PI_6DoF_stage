@@ -25,21 +25,36 @@ CONTROLLERNAME = 'E-712'
 STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 
-# Wave_length = 500
+'''
+    Parameters for data recorder
+'''
 NUMVALUES = 2600  # number of data sets to record as integer
+# NUMVALUES = 600
 RECRATE = 50  # number of recordings per second, i.e. in Hz
 
+'''
+    Parameters for Wave Generator
+'''
 NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
-AMPLITUDE = 45  # amplitude of the circular motion as float for both axes
+# AMPLITUDE = 45  # amplitude of the circular motion as float for both axes
+AMPLITUDE = 10
 if AMPLITUDE >= 50:
     print('AMPLITUDE TOO LARGE')
     exit()
 NUMCYLES = 1  # number of cycles for wave generator output
 TABLERATE = 25  # duration of a wave table point in multiples of servo cycle times as integer
+# TABLERATE = 5
 
-wavegens = (1, 2)
-wavetables = (1, 2)
+'''
+    Moving Axis define
+'''
+### 1=x,2=y,3=z_rot,4=z,5=x_rot,6=y_rot
+
+moving_axis = 3 
+
+wavegens = (1, 2, 3, 4, 5, 6)
+wavetables = (1, 2, 3, 4, 5, 6)
 
 with GCSDevice(CONTROLLERNAME) as pidevice:
     
@@ -80,14 +95,14 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     print('Sampling Freq. = ', drec.samplefreq)
 
     '''
-        Wave Generator & Trigger Configuration
+        Wave Generator Configuration
     '''
 #     print('Wave Generator Num. ', pidevice.qTWG())
 #     Servo_update_time = pidevice.qSPA(items=1, params=0x0E000200)[1][234881536]### 0x0E000200
 #     print('Servo update time: /s', Servo_update_time)
       
 #     pidevice.WAV_LIN(table=1, firstpoint=1, numpoints=NUMPOINTS, append='X', speedupdown=NUMPOINTS//10, amplitude=10, offset=0, seglength=NUMPOINTS)
-    pidevice.WAV_LIN(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
+    pidevice.WAV_LIN(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X',
                     speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=0, seglength=NUMPOINTS)
 #     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
 #                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
@@ -95,9 +110,14 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     pidevice.WGC(wavegens, [NUMCYLES]*len(wavegens))
     pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
     
+    '''
+        Trigger Configuration
+    '''
     pidevice.TWC()
-    for i in range(NUMPOINTS//12+1): ### 1kHz~15; 48Hz~300
-        pidevice.TWS(lines=2, points=1+12*i, switches=1)
+    for i in range(NUMPOINTS//12+1): ### 50Hz~12 for TABLERATE 25
+#     for i in range(NUMPOINTS//60+1): ### 50Hz~60 for TABLERATE 5
+        pidevice.TWS(lines=2, points=1+12*i, switches=1) ### 50Hz~12 for TABLERATE 25
+#         pidevice.TWS(lines=2, points=1+60*i, switches=1) ### 50Hz~60 for TABLERATE 5
     
     pidevice.CTO(lines=2, params=1, values=0.1)
 #     pidevice.CTO(lines=2, params=2, values=2)
@@ -125,18 +145,18 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     Table_rate = pidevice.qSPA(items=1, params=0x13000109)[1][318767369] ###0x13000109
 #     print(Table_rate)
 #     print(pidevice.qWTR(wavegens=1))
-    pitools.waitontarget(pidevice, '2')
+    pitools.waitontarget(pidevice, '%s'%moving_axis)
     print('Servo Status: ', pidevice.qSVO())
     
     '''
         Notice the Axis No.2!!!!
     '''
-    pidevice.WGO(wavegens[1], mode=[1])
-    while any(list(pidevice.IsGeneratorRunning(wavegens[1]).values())):
+    pidevice.WGO(wavegens[moving_axis-1], mode=[1])
+    while any(list(pidevice.IsGeneratorRunning(wavegens[moving_axis-1]).values())):
         print ('.')
         time.sleep(1.0)
     print('done')
-    pidevice.WGO(wavegens[1], mode=[0])
+    pidevice.WGO(wavegens[moving_axis-1], mode=[0])
 
 #     time.sleep(2.0)
 #     pidevice.WGO(wavegens=1, mode=0)
@@ -212,15 +232,37 @@ header = ['%s\n' %(name+'_PI'),
       '-------------------------------------------------\n',
       ]
 out_str = ['%f, %f, %f\n' %(y_pos[i], z_rot[i], x_rot[i]) for i in range(NUMVALUES)]
-# Export_Data(PI_name, header, out_str)
+Export_Data(PI_name, header, out_str)
 print('TXT file saved')
 
+t = np.linspace(0, samp_time, num=n_data)
 
 plt.figure(1)
-t = np.linspace(0, samp_time, num=n_data)
-plt.subplot(2,1,1)
-plt.plot(t, y_pos, color='blue')
-plt.subplot(2,1,2)
-plt.plot(t, z_rot, color='blue')
-plt.plot(t, x_rot, color='red')
+plt.gcf().set_size_inches(18,9)
+
+plt.subplot(3,1,1)
+plt.plot(t, y_pos, color='blue', label='length')
+plt.title('Length')
+plt.xlabel('Time /s')
+plt.ylabel('Position /nm')
+plt.grid(which='both', axis='both')
+
+plt.subplot(3,1,2)
+plt.plot(t, z_rot, color='red', label='Hor_Angle')
+plt.grid(which='both', axis='both')
+plt.xlabel('Time /s')
+plt.ylabel('Angle /urad')
+plt.title('Hor_Angle')
+
+plt.subplot(3,1,3)
+plt.plot(t, x_rot, color='black', label='Ver_Angle')
+plt.grid(which='both', axis='both')
+plt.title('Ver_Angle')
+plt.xlabel('Time /s')
+plt.ylabel('Angle /urad')
+
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
+plt.tight_layout()
+
 plt.show()
