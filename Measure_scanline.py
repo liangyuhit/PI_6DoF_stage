@@ -26,14 +26,17 @@ STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 
 # Wave_length = 500
-NUMVALUES = 600  # number of data sets to record as integer
+NUMVALUES = 2600  # number of data sets to record as integer
 RECRATE = 50  # number of recordings per second, i.e. in Hz
 
 NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
-AMPLITUDE = 10  # amplitude of the circular motion as float for both axes
+AMPLITUDE = 45  # amplitude of the circular motion as float for both axes
+if AMPLITUDE >= 50:
+    print('AMPLITUDE TOO LARGE')
+    exit()
 NUMCYLES = 1  # number of cycles for wave generator output
-TABLERATE = 5  # duration of a wave table point in multiples of servo cycle times as integer
+TABLERATE = 25  # duration of a wave table point in multiples of servo cycle times as integer
 
 wavegens = (1, 2)
 wavetables = (1, 2)
@@ -93,8 +96,8 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
     
     pidevice.TWC()
-    for i in range(NUMPOINTS//60+1): ### 1kHz~15; 48Hz~300
-        pidevice.TWS(lines=2, points=1+60*i, switches=1)
+    for i in range(NUMPOINTS//12+1): ### 1kHz~15; 48Hz~300
+        pidevice.TWS(lines=2, points=1+12*i, switches=1)
     
     pidevice.CTO(lines=2, params=1, values=0.1)
 #     pidevice.CTO(lines=2, params=2, values=2)
@@ -209,7 +212,7 @@ header = ['%s\n' %(name+'_PI'),
       '-------------------------------------------------\n',
       ]
 out_str = ['%f, %f, %f\n' %(y_pos[i], z_rot[i], x_rot[i]) for i in range(NUMVALUES)]
-Export_Data(PI_name, header, out_str)
+# Export_Data(PI_name, header, out_str)
 print('TXT file saved')
 
 
@@ -221,6 +224,3 @@ plt.subplot(2,1,2)
 plt.plot(t, z_rot, color='blue')
 plt.plot(t, x_rot, color='red')
 plt.show()
-     
-     
-     
