@@ -56,7 +56,7 @@ def runwavegen(pidevice):
     print('start wave generators {}'.format(wavegens))
     pidevice.WGO(wavegens, mode=[1] * len(wavegens))
     while any(list(pidevice.IsGeneratorRunning(wavegens).values())):
-        print '.',
+        print ('.')
         sleep(1.0)
     print('\nreset wave generators {}'.format(wavegens))
     pidevice.WGO(wavegens, mode=[0] * len(wavegens))

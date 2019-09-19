@@ -37,11 +37,12 @@ RECRATE = 50  # number of recordings per second, i.e. in Hz
 '''
 NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
-# AMPLITUDE = 45  # amplitude of the circular motion as float for both axes
-AMPLITUDE = 10
-if AMPLITUDE >= 50:
-    print('AMPLITUDE TOO LARGE')
-    exit()
+AMPLITUDE = 45  # amplitude of the circular motion as float for both axes
+# AMPLITUDE = 200
+# if AMPLITUDE >= 50:
+#     print('AMPLITUDE TOO LARGE')
+#     exit()
+OFFSET = 0
 NUMCYLES = 1  # number of cycles for wave generator output
 TABLERATE = 25  # duration of a wave table point in multiples of servo cycle times as integer
 # TABLERATE = 5
@@ -51,7 +52,7 @@ TABLERATE = 25  # duration of a wave table point in multiples of servo cycle tim
 '''
 ### 1=x,2=y,3=z_rot,4=z,5=x_rot,6=y_rot
 
-moving_axis = 3 
+moving_axis = 2
 
 wavegens = (1, 2, 3, 4, 5, 6)
 wavetables = (1, 2, 3, 4, 5, 6)
@@ -103,7 +104,7 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
       
 #     pidevice.WAV_LIN(table=1, firstpoint=1, numpoints=NUMPOINTS, append='X', speedupdown=NUMPOINTS//10, amplitude=10, offset=0, seglength=NUMPOINTS)
     pidevice.WAV_LIN(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X',
-                    speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=0, seglength=NUMPOINTS)
+                    speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=OFFSET, seglength=NUMPOINTS)
 #     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
 #                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
     pidevice.WSL(wavegens, wavetables)
@@ -232,6 +233,10 @@ header = ['%s\n' %(name+'_PI'),
       '-------------------------------------------------\n',
       ]
 out_str = ['%f, %f, %f\n' %(y_pos[i], z_rot[i], x_rot[i]) for i in range(NUMVALUES)]
+
+'''
+    Output
+'''
 Export_Data(PI_name, header, out_str)
 print('TXT file saved')
 

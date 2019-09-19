@@ -110,8 +110,8 @@ length_PI = length_PI*1e3 ### nm
     Data Alignment
 '''
 print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::10]
-SmarAct_CH2 = SmarAct_CH2[::10]
+SmarAct_CH1 = SmarAct_CH1[::50]
+SmarAct_CH2 = SmarAct_CH2[::50]
 print('CH1: ', SmarAct_CH1.shape)
 print('CH2: ', SmarAct_CH2.shape)
 # length_PI = length_PI[20:520]
@@ -120,15 +120,14 @@ print('CH2: ', SmarAct_CH2.shape)
 print('PI: ', len(length_PI))
 
 if 1:
-    start = 50
-    end = 450
+    start = 300
+    end = 2200
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
     hor_angle, hor_length, ver_angle, ver_length = hor_angle[start:end], hor_length[start:end], ver_angle[start:end], ver_length[start:end]
     SmarAct_CH1, SmarAct_CH2 = SmarAct_CH1[start:end], SmarAct_CH2[start:end]
     length_PI, Hor_PI, Ver_PI = length_PI[start:end], Hor_PI[start:end], Ver_PI[start:end]
     
 SmarAct_common, SmarAct_diff = (SmarAct_CH2-SmarAct_CH1)/2, (SmarAct_CH2+SmarAct_CH1)/2
-
 
 
 if 1:
@@ -141,11 +140,11 @@ if 1:
     video_length_fit_poly = np.poly1d(video_length_fit_params)
     video_length_fitline = video_length_fit_poly(timeline)
     video_length_nonlinearity_T = video_length - video_length_fitline
-    spline = interp1d(video_length_fitline, video_length_nonlinearity_T, kind='cubic')
-    video_length_new = np.linspace(video_length[0], video_length[-1], num=len(video_length))
-    video_length_nonlinearity_P = spline(video_length_new)
+#     spline = interp1d(video_length_fitline, video_length_nonlinearity_T, kind='cubic')
+#     video_length_new = np.linspace(video_length_fitline[0], video_length_fitline[-1], num=len(video_length_fitline))
+#     video_length_nonlinearity_P = spline(video_length_new)
     f_video_length_nonlinearity, fft, FFT_video_length_nonlinearity_T, phi = FFT_cal(video_length_nonlinearity_T, 1/fs)
-    f_video_length_nonlinearity_P, fft, FFT_video_length_nonlinearity_P, phi = FFT_cal(video_length_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
+#     f_video_length_nonlinearity_P, fft, FFT_video_length_nonlinearity_P, phi = FFT_cal(video_length_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
      
     video_hor = hor_angle - Hor_PI
     video_hor = video_hor - np.average(video_hor)
@@ -153,10 +152,10 @@ if 1:
     video_hor_fit_poly = np.poly1d(video_hor_fit_params)
     video_hor_fitline = video_hor_fit_poly(timeline)
     video_hor_nonlinearity_T = video_hor - video_hor_fitline
-    spline = interp1d(video_length, video_hor_nonlinearity_T, kind='cubic')
-    video_hor_nonlinearity_P = spline(video_length_new)
+#     spline = interp1d(video_length, video_hor_nonlinearity_T, kind='cubic')
+#     video_hor_nonlinearity_P = spline(video_length_new)
     f_video_hor_nonlinearity, fft, FFT_video_hor_nonlinearity_T, phi = FFT_cal(video_hor_nonlinearity_T, 1/fs)
-    f_video_hor_nonlinearity_P, fft, FFT_video_hor_nonlinearity_P, phi = FFT_cal(video_hor_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
+#     f_video_hor_nonlinearity_P, fft, FFT_video_hor_nonlinearity_P, phi = FFT_cal(video_hor_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
      
     video_ver = ver_angle - Ver_PI
     video_ver = video_ver - np.average(video_ver)
@@ -164,10 +163,10 @@ if 1:
     video_ver_fit_poly = np.poly1d(video_ver_fit_params)
     video_ver_fitline = video_ver_fit_poly(timeline)
     video_ver_nonlinearity_T = video_ver - video_ver_fitline
-    spline = interp1d(video_length, video_ver_nonlinearity_T, kind='cubic')
-    video_ver_nonlinearity_P = spline(video_length_new)
+#     spline = interp1d(video_length, video_ver_nonlinearity_T, kind='cubic')
+#     video_ver_nonlinearity_P = spline(video_length_new)
     f_video_ver_nonlinearity, fft, FFT_video_ver_nonlinearity_T, phi = FFT_cal(video_ver_nonlinearity_T, 1/fs)
-    f_video_ver_nonlinearity_P, fft, FFT_video_ver_nonlinearity_P, phi = FFT_cal(video_ver_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
+#     f_video_ver_nonlinearity_P, fft, FFT_video_ver_nonlinearity_P, phi = FFT_cal(video_ver_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
      
      
     '''
@@ -179,11 +178,11 @@ if 1:
     length_Senson_SmarAct_fit_poly = np.poly1d(length_Senson_SmarAct_fit_params)
     length_Senson_SmarAct_fitline = length_Senson_SmarAct_fit_poly(timeline)
     length_Senson_SmarAct_nonlinearity_T = length_Senson_SmarAct - length_Senson_SmarAct_fitline
-    spline = interp1d(SmarAct_common, length_Senson_SmarAct_nonlinearity_T, kind='cubic')
-    SmarAct_length_new = np.linspace(SmarAct_common[0], SmarAct_common[-1], num=len(SmarAct_common))
-    length_Senson_SmarAct_nonlinearity_P = spline(SmarAct_length_new)
+#     spline = interp1d(SmarAct_common, length_Senson_SmarAct_nonlinearity_T, kind='cubic')
+#     SmarAct_length_new = np.linspace(SmarAct_common[0], SmarAct_common[-1], num=len(SmarAct_common))
+#     length_Senson_SmarAct_nonlinearity_P = spline(SmarAct_length_new)
     f_length_Senson_SmarAct_nonlinearity, fft, FFT_length_Senson_SmarAct_nonlinearity_T, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_T, 1/fs)
-    f_length_Senson_SmarAct_nonlinearity_P, fft, FFT_length_Senson_SmarAct_nonlinearity_P, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_P, (SmarAct_length_new[1]-SmarAct_length_new[0]))
+#     f_length_Senson_SmarAct_nonlinearity_P, fft, FFT_length_Senson_SmarAct_nonlinearity_P, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_P, (SmarAct_length_new[1]-SmarAct_length_new[0]))
     
      
     '''
@@ -195,11 +194,11 @@ if 1:
     length_Senson_PI_fit_poly = np.poly1d(length_Senson_PI_fit_params)
     length_Senson_PI_fitline = length_Senson_PI_fit_poly(timeline)
     length_Senson_PI_nonlinearity_T = length_Senson_PI - length_Senson_PI_fitline
-    spline = interp1d(video_length, length_Senson_PI_nonlinearity_T, kind='cubic')
-    length_Senson_PI_new = np.linspace(video_length[0], video_length[-1], num=len(video_length))
-    length_Senson_PI_nonlinearity_P = spline(length_Senson_PI_new)
+#     spline = interp1d(video_length, length_Senson_PI_nonlinearity_T, kind='cubic')
+#     length_Senson_PI_new = np.linspace(video_length[0], video_length[-1], num=len(video_length))
+#     length_Senson_PI_nonlinearity_P = spline(length_Senson_PI_new)
     f_length_Senson_PI_nonlinearity, fft, FFT_length_Senson_PI_nonlinearity_T, phi = FFT_cal(length_Senson_PI_nonlinearity_T, 1/fs)
-    f_length_Senson_PI_nonlinearity_P, fft, FFT_length_Senson_PI_nonlinearity_P, phi = FFT_cal(length_Senson_PI_nonlinearity_P, (length_Senson_PI_new[1]-length_Senson_PI_new[0]))
+#     f_length_Senson_PI_nonlinearity_P, fft, FFT_length_Senson_PI_nonlinearity_P, phi = FFT_cal(length_Senson_PI_nonlinearity_P, (length_Senson_PI_new[1]-length_Senson_PI_new[0]))
      
     Hor_PI = Hor_PI - np.average(Hor_PI)
     Ver_PI = Ver_PI - np.average(Ver_PI)
@@ -208,7 +207,7 @@ if 1:
         Nonlinearity SmarAct-PI
     '''
     
-    hor_SmarAct = np.arctan(np.array(-SmarAct_diff/3.4e6))*1e6 ### 5mm distance
+    hor_SmarAct = np.arctan(np.array(-SmarAct_diff/3.5e6))*1e6 ### 5mm distance
     hor_SmarAct_PI_Nonlinearity = hor_SmarAct - Hor_PI
     hor_SmarAct_PI_Nonlinearity = hor_SmarAct_PI_Nonlinearity - np.average(hor_SmarAct_PI_Nonlinearity)
     f_hor_SmarAct_PI_Nonlinearity, fft, FFT_hor_SmarAct_PI_Nonlinearity, phi = FFT_cal(hor_SmarAct_PI_Nonlinearity, 1/fs)
@@ -429,7 +428,7 @@ if 1:
     plt.xlabel('Freq. /Hz')
     plt.ylabel('Angle /urad')
 #     plt.xlim(1e3,30)
-    plt.ylim(1e-4,1e-1)
+    plt.ylim(1e-4,1e0)
     plt.legend()
      
     plt.subplot(2,3,4)
@@ -452,7 +451,7 @@ if 1:
     plt.legend()
      
     plt.subplot(2,3,6)
-    plt.loglog(f_video_ver_nonlinearity_P, FFT_video_ver_nonlinearity_T, color='blue', label='ver_video-PI_nonlinearity_Time')
+    plt.loglog(f_video_ver_nonlinearity, FFT_video_ver_nonlinearity_T, color='blue', label='ver_video-PI_nonlinearity_Time')
 #     plt.loglog(1/f_video_ver_nonlinearity_P, FFT_video_ver_nonlinearity_P, color='red', label='ver_video-PI_nonlinearity_Pos.')
     plt.grid(which='both', axis='both')
 #     plt.gca().invert_xaxis()

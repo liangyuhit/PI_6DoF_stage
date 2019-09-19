@@ -110,8 +110,8 @@ length_PI = length_PI*1e3 ### nm
     Data Alignment
 '''
 print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::10]
-SmarAct_CH2 = SmarAct_CH2[::10]
+SmarAct_CH1 = SmarAct_CH1[::50]
+SmarAct_CH2 = SmarAct_CH2[::50]
 print('CH1: ', SmarAct_CH1.shape)
 print('CH2: ', SmarAct_CH2.shape)
 # length_PI = length_PI[20:520]
@@ -120,8 +120,8 @@ print('CH2: ', SmarAct_CH2.shape)
 print('PI: ', len(length_PI))
 
 if 1:
-    start = 50
-    end = 450
+    start = 300
+    end = 2200
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
     hor_angle, hor_length, ver_angle, ver_length = hor_angle[start:end], hor_length[start:end], ver_angle[start:end], ver_length[start:end]
     SmarAct_CH1, SmarAct_CH2 = SmarAct_CH1[start:end], SmarAct_CH2[start:end]
@@ -149,7 +149,7 @@ if 1:
      
     video_hor = hor_angle + Hor_PI
     video_hor = video_hor - np.average(video_hor)
-    video_hor_fit_params = np.polyfit(timeline, video_hor, 2)
+    video_hor_fit_params = np.polyfit(timeline, video_hor, 6)
     video_hor_fit_poly = np.poly1d(video_hor_fit_params)
     video_hor_fitline = video_hor_fit_poly(timeline)
     video_hor_nonlinearity_T = video_hor - video_hor_fitline
@@ -160,7 +160,7 @@ if 1:
      
     video_ver = ver_angle + Ver_PI
     video_ver = video_ver - np.average(video_ver)
-    video_ver_fit_params = np.polyfit(timeline, video_ver, 2)
+    video_ver_fit_params = np.polyfit(timeline, video_ver, 6)
     video_ver_fit_poly = np.poly1d(video_ver_fit_params)
     video_ver_fitline = video_ver_fit_poly(timeline)
     video_ver_nonlinearity_T = video_ver - video_ver_fitline
