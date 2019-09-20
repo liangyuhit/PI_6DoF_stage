@@ -9,8 +9,8 @@ Created on 17.09.2019
     Output define
 '''
 
-path = r'C:\Users\yu03\Desktop\NMC Room\6 Dof PI\Test_trigger_record'
-name = 'test'
+path = r'C:\Users\yu03\Desktop\NMC Room\6 Dof PI\Rigid\Cam\Nonlinearity_ver\7__200urad_50s_right_timing'
+name = '7'
 
 type = '.txt'
 

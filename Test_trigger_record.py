@@ -89,19 +89,24 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     print('data recorder rate: {:.2f} Hz'.format(drec.samplefreq))
     drec.options = (datarectools.RecordOptions.ACTUAL_POSITION_2)
 #     drec.sources = ('2', '3', '5') ### 2=y=lenth 3=rot_z=hor_angle, 5=rot_x=ver_angle
-    drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
-#     drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
-    drec.arm()
+#     drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
+    drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
+#     drec.arm()
+    print('Data recorder TriggerSource: ', pidevice.qDRT())
     
     print('Sampling Freq. = ', drec.samplefreq)
-
+#     pidevice.RTR(60)
+#     print('Record Table Rate: ', pidevice.qRTR())
+    
     pidevice.DRC(tables=1, sources='2', options=2)
     pidevice.DRC(tables=2, sources='3', options=2)
     pidevice.DRC(tables=3, sources='5', options=2)
     print('Data recorder configuration: ', pidevice.qDRC())
     
-#     pidevice.DRT(tables=1, sources=2, values=1)
-    print('Data recorder TriggerSource: ', pidevice.qDRT())
+    
+    
+#     pidevice.DRT(tables=0, sources=2, values='0')
+#     print('Data recorder TriggerSource: ', pidevice.qDRT())
     
     '''
         Wave Generator Configuration
@@ -251,7 +256,7 @@ plt.subplot(3,1,1)
 plt.plot(y_pos, color='blue', label='length')
 plt.title('Length')
 plt.xlabel('Time /s')
-plt.ylabel('Position /nm')
+plt.ylabel('Position /um')
 plt.grid(which='both', axis='both')
 
 plt.subplot(3,1,2)

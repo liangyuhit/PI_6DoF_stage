@@ -28,24 +28,25 @@ REFMODE = None  # reference the connected stages
 '''
     Parameters for data recorder
 '''
-NUMVALUES = 5100  # number of data sets to record as integer
+NUMVALUES = 2600  # number of data sets to record as integer
 # NUMVALUES = 600
-RECRATE = 50  # number of recordings per second, i.e. in Hz
+RECRATE = 47.6  # number of recordings per second, i.e. in Hz
 
 '''
     Parameters for Wave Generator
 '''
-NUMPOINTS = 3000  # number of points for one sine period as integer
+NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
-AMPLITUDE = 20  # amplitude of the circular motion as float for both axes
-# AMPLITUDE = 200
+# AMPLITUDE = 45   # amplitude of the circular motion as float for both axes
+AMPLITUDE = 200
 # if AMPLITUDE >= 50:
 #     print('AMPLITUDE TOO LARGE')
 #     exit()
 OFFSET = -100
 NUMCYLES = 1  # number of cycles for wave generator output
-TABLERATE = 50  # duration of a wave table point in multiples of servo cycle times as integer
-# TABLERATE = 5
+# TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
+TABLERATE = 25
+Data_record_Table_rate = 12 ### 47.6Hz; ~12 for TABLERATE 25; ~60 for TABLERATE 5
 
 '''
     Moving Axis define
@@ -102,12 +103,12 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     Servo_update_time = pidevice.qSPA(items=1, params=0x0E000200)[1][234881536]### 0x0E000200
 #     print('Servo update time: /s', Servo_update_time)
       
-#     pidevice.WAV_LIN(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X',
-#                     speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=OFFSET, seglength=NUMPOINTS)
+    pidevice.WAV_LIN(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X',
+                    speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=OFFSET, seglength=NUMPOINTS)
 #     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
 #                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
-    pidevice.WAV_RAMP(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X', center=NUMPOINTS/2, 
-                      speedupdown=NUMPOINTS//10, amplitude=45, offset=0, seglength=NUMPOINTS)
+#     pidevice.WAV_RAMP(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X', center=NUMPOINTS/2, 
+#                       speedupdown=NUMPOINTS//10, amplitude=45, offset=0, seglength=NUMPOINTS)
     pidevice.WSL(wavegens, wavetables)
     pidevice.WGC(wavegens, [NUMCYLES]*len(wavegens))
     pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
@@ -116,9 +117,9 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
         Trigger Configuration
     '''
     pidevice.TWC()
-    for i in range(NUMPOINTS//6+1): ### 50Hz~12 for TABLERATE 25
+    for i in range(NUMPOINTS//Data_record_Table_rate+1): ### 50Hz~12 for TABLERATE 25
 #     for i in range(NUMPOINTS//60+1): ### 50Hz~60 for TABLERATE 5
-        pidevice.TWS(lines=2, points=1+6*i, switches=1) ### 50Hz~12 for TABLERATE 25
+        pidevice.TWS(lines=2, points=1+Data_record_Table_rate*i, switches=1) ### 50Hz~12 for TABLERATE 25
 #         pidevice.TWS(lines=2, points=1+60*i, switches=1) ### 50Hz~60 for TABLERATE 5
     
     pidevice.CTO(lines=2, params=1, values=0.1)
@@ -139,7 +140,8 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     pidevice.DRC(tables=2, sources='3', options=2)
     pidevice.DRC(tables=3, sources='5', options=2)
     print('Data recorder configuration: ', pidevice.qDRC())
-  
+    
+    print('Record Table Rate: ', pidevice.qRTR())
 #     pidevice.DRT(tables=1, sources='1', values=1)
 #     print('Data recorder TriggerSource: ', pidevice.qDRT())
 #     pitools.waitonready(pidevice)

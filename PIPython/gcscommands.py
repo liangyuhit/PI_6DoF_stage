@@ -9,7 +9,6 @@ import pipython
 
 # Invalid class name "basestring"  pylint: disable=C0103
 # Redefining built-in 'basestring' pylint: disable=W0622
-try:
     basestring
 except NameError:
     basestring = str
