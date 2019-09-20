@@ -92,7 +92,7 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
 #     drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
     drec.arm()
-    print('Data Trigger Source:', pidevice.qDRT())
+    
     print('Sampling Freq. = ', drec.samplefreq)
 
     pidevice.DRC(tables=1, sources='2', options=2)
