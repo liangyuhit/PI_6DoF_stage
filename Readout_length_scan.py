@@ -110,8 +110,8 @@ length_PI = length_PI*1e3 ### nm
     Data Alignment
 '''
 print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::50]
-SmarAct_CH2 = SmarAct_CH2[::50]
+SmarAct_CH1 = SmarAct_CH1[::66]
+SmarAct_CH2 = SmarAct_CH2[::66]
 print('CH1: ', SmarAct_CH1.shape)
 print('CH2: ', SmarAct_CH2.shape)
 # length_PI = length_PI[20:520]
@@ -119,7 +119,7 @@ print('CH2: ', SmarAct_CH2.shape)
 # Ver_PI = Ver_PI[20:520]
 print('PI: ', len(length_PI))
 
-if 1:
+if 0:
     start = 300
     end = 2200
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
@@ -131,7 +131,7 @@ SmarAct_common, SmarAct_diff = (SmarAct_CH2-SmarAct_CH1)/2, (SmarAct_CH2+SmarAct
 
 
 
-if 1:
+if 0:
     '''
         Nonlinearity Video
     '''
@@ -292,7 +292,7 @@ figManager.window.showMaximized()
 plt.tight_layout()
 
 
-if 1:  
+if 0:  
     plt.figure('Length Nonlinearity')
     plt.gcf().set_size_inches(18,9)
     plt.subplot(3,3,1)

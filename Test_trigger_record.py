@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 16.09.2019
+Created on 20.09.2019
 
 @author: yu03
 '''
@@ -28,31 +28,31 @@ REFMODE = None  # reference the connected stages
 '''
     Parameters for data recorder
 '''
-NUMVALUES = 5100  # number of data sets to record as integer
+NUMVALUES = 500  # number of data sets to record as integer
 # NUMVALUES = 600
-RECRATE = 50  # number of recordings per second, i.e. in Hz
+RECRATE = 250  # number of recordings per second, i.e. in Hz
 
 '''
     Parameters for Wave Generator
 '''
-NUMPOINTS = 3000  # number of points for one sine period as integer
+NUMPOINTS = 30000  # number of points for one sine period as integer
 STARTPOS = 0.0  # start position of the circular motion as float for both axes
-AMPLITUDE = 20  # amplitude of the circular motion as float for both axes
+AMPLITUDE = 1  # amplitude of the circular motion as float for both axes
 # AMPLITUDE = 200
 # if AMPLITUDE >= 50:
 #     print('AMPLITUDE TOO LARGE')
 #     exit()
-OFFSET = -100
+OFFSET = 0
 NUMCYLES = 1  # number of cycles for wave generator output
-TABLERATE = 50  # duration of a wave table point in multiples of servo cycle times as integer
-# TABLERATE = 5
+# TABLERATE = 50  # duration of a wave table point in multiples of servo cycle times as integer
+TABLERATE = 1
 
 '''
     Moving Axis define
 '''
 ### 1=x,2=y,3=z_rot,4=z,5=x_rot,6=y_rot
 
-moving_axis = 5
+moving_axis = 2
 
 wavegens = (1, 2, 3, 4, 5, 6)
 wavetables = (1, 2, 3, 4, 5, 6)
@@ -88,13 +88,21 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     drec.samplefreq = RECRATE
     print('data recorder rate: {:.2f} Hz'.format(drec.samplefreq))
     drec.options = (datarectools.RecordOptions.ACTUAL_POSITION_2)
-    drec.sources = ('2', '3', '5') ### 2=y=lenth 3=rot_z=hor_angle, 5=rot_x=ver_angle
+#     drec.sources = ('2', '3', '5') ### 2=y=lenth 3=rot_z=hor_angle, 5=rot_x=ver_angle
     drec.trigsources = datarectools.TriggerSources.POSITION_CHANGING_COMMAND_1
 #     drec.trigsources = datarectools.TriggerSources.TRIGGER_IMMEDIATELY_4
     drec.arm()
-    print(pidevice.qDRT())
+    print('Data Trigger Source:', pidevice.qDRT())
     print('Sampling Freq. = ', drec.samplefreq)
 
+    pidevice.DRC(tables=1, sources='2', options=2)
+    pidevice.DRC(tables=2, sources='3', options=2)
+    pidevice.DRC(tables=3, sources='5', options=2)
+    print('Data recorder configuration: ', pidevice.qDRC())
+    
+#     pidevice.DRT(tables=1, sources=2, values=1)
+    print('Data recorder TriggerSource: ', pidevice.qDRT())
+    
     '''
         Wave Generator Configuration
     '''
@@ -104,10 +112,10 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
       
 #     pidevice.WAV_LIN(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X',
 #                     speedupdown=NUMPOINTS//10, amplitude=AMPLITUDE, offset=OFFSET, seglength=NUMPOINTS)
-#     pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
-#                        center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
-    pidevice.WAV_RAMP(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X', center=NUMPOINTS/2, 
-                      speedupdown=NUMPOINTS//10, amplitude=45, offset=0, seglength=NUMPOINTS)
+    pidevice.WAV_SIN_P(table=wavetables[1], firstpoint=1, numpoints=NUMPOINTS, append='X',
+                       center=NUMPOINTS/2, amplitude=AMPLITUDE, offset=STARTPOS, seglength=NUMPOINTS)
+#     pidevice.WAV`_RAMP(table=wavetables[moving_axis-1], firstpoint=1, numpoints=NUMPOINTS, append='X', center=NUMPOINTS/2, 
+#                       speedupdown=NUMPOINTS//10, amplitude=45, offset=0, seglength=NUMPOINTS)
     pidevice.WSL(wavegens, wavetables)
     pidevice.WGC(wavegens, [NUMCYLES]*len(wavegens))
     pidevice.WTR(0, tablerates=TABLERATE, interpol=1)
@@ -116,32 +124,26 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
         Trigger Configuration
     '''
     pidevice.TWC()
-    for i in range(NUMPOINTS//6+1): ### 50Hz~12 for TABLERATE 25
-#     for i in range(NUMPOINTS//60+1): ### 50Hz~60 for TABLERATE 5
-        pidevice.TWS(lines=2, points=1+6*i, switches=1) ### 50Hz~12 for TABLERATE 25
-#         pidevice.TWS(lines=2, points=1+60*i, switches=1) ### 50Hz~60 for TABLERATE 5
+#     for i in range(NUMPOINTS//6+1): ### 50Hz~12 for TABLERATE 25
+    for i in range(NUMPOINTS//300+1): ### 50Hz~60 for TABLERATE 5
+#         pidevice.TWS(lines=2, points=1+6*i, switches=1) ### 50Hz~12 for TABLERATE 25
+        pidevice.TWS(lines=2, points=1+300*i, switches=1) ### 50Hz~60 for TABLERATE 5
     
     pidevice.CTO(lines=2, params=1, values=0.1)
 #     pidevice.CTO(lines=2, params=2, values=2)
     pidevice.CTO(lines=2, params=3, values=9)
-    Trig_conf = pidevice.qCTO()[2] ### Y_axis=2
-    Trig_step = Trig_conf[1]
-    Trig_line = Trig_conf[2]
-    Trig_mode = Trig_conf[3]
-#     print(Trig_conf)
-    print('Trigger step = ', float(Trig_step))
-    print('Trigger line = ', Trig_line)
-    print('Trigger mode = ', Trig_mode)
+#     Trig_conf = pidevice.qCTO()[2] ### Y_axis=2
+#     Trig_step = Trig_conf[1]
+#     Trig_line = Trig_conf[2]
+#     Trig_mode = Trig_conf[3]
+# #     print(Trig_conf)
+#     print('Trigger step = ', float(Trig_step))
+#     print('Trigger line = ', Trig_line)
+#     print('Trigger mode = ', Trig_mode)
      
 #     print('Data recorder options: ', pidevice.qHDR())
-     
-    pidevice.DRC(tables=1, sources='2', options=2)
-    pidevice.DRC(tables=2, sources='3', options=2)
-    pidevice.DRC(tables=3, sources='5', options=2)
-    print('Data recorder configuration: ', pidevice.qDRC())
   
-#     pidevice.DRT(tables=1, sources='1', values=1)
-#     print('Data recorder TriggerSource: ', pidevice.qDRT())
+
 #     pitools.waitonready(pidevice)
     
 #     Table_rate = pidevice.qSPA(items=1, params=0x13000109)[1][318767369] ###0x13000109
@@ -189,23 +191,22 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
         Data Recording
     '''
     
-    header, data = drec.getdata()
-   
-    y_pos, z_rot, x_rot = data[0], data[1], data[2]
+#     header, data = drec.getdata()
+#     y_pos, z_rot, x_rot = data[0], data[1], data[2]
        
-    samp_time = NUMVALUES/RECRATE
-    n_data = NUMVALUES
-    print('Sampling Rate = ', RECRATE)
-    print('Data length = ', n_data)
-    print('Time = ', samp_time)
-      
-
-#     header, data = pidevice.qDRR(tables=[1,2,3], offset=1, numvalues=NUMVALUES)
-    
-#     header, data = datarectools.Datarecorder(pidevice).read(offset=1, numvalues=NUMVALUES)
-#     print('Num. of recorded points: ', pidevice.qDRL())
 #     samp_time = NUMVALUES/RECRATE
 #     n_data = NUMVALUES
+#     print('Sampling Rate = ', RECRATE)
+#     print('Data length = ', n_data)
+#     print('Time = ', samp_time)
+      
+
+    header, data = pidevice.qDRR(tables=[1,2,3], offset=1, numvalues=NUMVALUES)
+    y_pos, z_rot, x_rot = data[0], data[1], data[2]
+#     header, data = datarectools.Datarecorder(pidevice).read(offset=1, numvalues=NUMVALUES)
+#     print('Num. of recorded points: ', pidevice.qDRL())
+    samp_time = NUMVALUES/RECRATE
+    n_data = NUMVALUES
     
 #     print(header)
 #     print((data))
@@ -247,7 +248,7 @@ plt.figure(1)
 plt.gcf().set_size_inches(18,9)
 
 plt.subplot(3,1,1)
-plt.plot(t, y_pos, color='blue', label='length')
+plt.plot(y_pos, color='blue', label='length')
 plt.title('Length')
 plt.xlabel('Time /s')
 plt.ylabel('Position /nm')
