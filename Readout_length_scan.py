@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from FFT_Interpolation import FFT_cal
 
+
 def Read_Data_4Ch(name):
     '''
         Return Data in File (4 Channels: Data_Ch1, Data_Ch2, Data_Ch3, Data_Ch4)
@@ -110,16 +111,17 @@ length_PI = length_PI*1e3 ### nm
     Data Alignment
 '''
 print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::66]
-SmarAct_CH2 = SmarAct_CH2[::66]
+SmarAct_CH1 = SmarAct_CH1[::50]
+SmarAct_CH2 = SmarAct_CH2[::50]
 print('CH1: ', SmarAct_CH1.shape)
 print('CH2: ', SmarAct_CH2.shape)
-# length_PI = length_PI[20:520]
-# Hor_PI = Hor_PI[20:520]
-# Ver_PI = Ver_PI[20:520]
+length_PI = length_PI[:2500]
+Hor_PI = Hor_PI[:2500]
+Ver_PI = Ver_PI[:2500]
 print('PI: ', len(length_PI))
 
-if 0:
+SmarAct_CH2 = -SmarAct_CH2
+if 1:
     start = 300
     end = 2200
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
@@ -127,17 +129,27 @@ if 0:
     SmarAct_CH1, SmarAct_CH2 = SmarAct_CH1[start:end], SmarAct_CH2[start:end]
     length_PI, Hor_PI, Ver_PI = length_PI[start:end], Hor_PI[start:end], Ver_PI[start:end]
     
-SmarAct_common, SmarAct_diff = (SmarAct_CH2-SmarAct_CH1)/2, (SmarAct_CH2+SmarAct_CH1)/2
+SmarAct_common, SmarAct_diff = (SmarAct_CH2+SmarAct_CH1)/2, (SmarAct_CH2-SmarAct_CH1)/2
+
+video_length = (hor_length+ver_length)/2
+# video_length = video_length-np.average(video_length)
+
+# video_length = video_length * (np.max(length_PI)-np.min(length_PI))/(np.max(video_length)-np.min(video_length))
+# SmarAct_common = -SmarAct_common * (np.max(length_PI)-np.min(length_PI))/(np.max(SmarAct_common)-np.min(SmarAct_common))
 
 
+# video_length = np.insert(video_length, 705, (video_length[704]+video_length[705])/2)
+# video_length = np.insert(video_length, 4655, (video_length[4654]+video_length[4655])/2)
+print('Video', len(video_length))
+length_Senson_PI = video_length - length_PI
 
-if 0:
+if 1:
     '''
         Nonlinearity Video
     '''
-    video_length = (hor_length+ver_length)/2
-    video_length = video_length-np.average(video_length)
-    video_length_fit_params = np.polyfit(timeline, video_length, 3)
+#     video_length = (hor_length+ver_length)/2
+#     video_length = video_length-np.average(video_length)
+    video_length_fit_params = np.polyfit(timeline, video_length, 10)
     video_length_fit_poly = np.poly1d(video_length_fit_params)
     video_length_fitline = video_length_fit_poly(timeline)
     video_length_nonlinearity_T = video_length - video_length_fitline
@@ -191,7 +203,7 @@ if 0:
         Nonlinearity Video-PI
     '''
     length_Senson_PI = video_length - length_PI
-    length_Senson_PI = length_Senson_PI-np.average(length_Senson_PI)
+#     length_Senson_PI = length_Senson_PI-np.average(length_Senson_PI)
     length_Senson_PI_fit_params = np.polyfit(timeline, length_Senson_PI, 2)
     length_Senson_PI_fit_poly = np.poly1d(length_Senson_PI_fit_params)
     length_Senson_PI_fitline = length_Senson_PI_fit_poly(timeline)
@@ -215,6 +227,7 @@ plt.gcf().set_size_inches(18,9)
 plt.subplot(3,3,1)
 plt.plot(hor_length, color='blue', label='hor_length')
 plt.plot(ver_length, color='red', label='ver_length')
+# plt.plot(video_length, color='black', label='vidoe length(common)')
 plt.grid(which='both', axis='both')
 plt.title('Video length')
 plt.xlabel('Sample')
@@ -292,7 +305,7 @@ figManager.window.showMaximized()
 plt.tight_layout()
 
 
-if 0:  
+if 1:  
     plt.figure('Length Nonlinearity')
     plt.gcf().set_size_inches(18,9)
     plt.subplot(3,3,1)
@@ -444,7 +457,7 @@ if 0:
     plt.loglog(1/f_video_ver_nonlinearity_P, FFT_video_ver_nonlinearity_P, color='red', label='ver_video-PI_nonlinearity_Pos.')
     plt.grid(which='both', axis='both')
     plt.gca().invert_xaxis()
-    plt.title('Video horizontal angle Nonlinearity FFT')
+    plt.title('Video Vertical angle Nonlinearity FFT')
     plt.xlabel('Wavelength /nm')
     plt.ylabel('Angle /urad')
     plt.xlim(1e3,30)
@@ -453,6 +466,59 @@ if 0:
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()
     plt.tight_layout()
+    
+if 0:
+    plt.figure('Ellipse')
+    plt.subplot(3,2,1)
+    plt.plot(video_length, color='blue', label='Video_common_scaled')
+    plt.plot(length_PI, color='red', label='length_PI')
+    plt.grid(which='both', axis='both')
+    plt.xlabel('Samples')
+    plt.ylabel('Position /nm')
+    plt.legend()
+    plt.subplot(3,2,3)
+    plt.plot(length_Senson_PI, color='blue', label='Video - PI')
+    plt.grid(which='both', axis='both')
+    plt.xlabel('Samples')
+    plt.ylabel('Position difference /nm')
+    plt.legend()
+    plt.subplot(3,2,5)
+    plt.plot(length_PI, length_Senson_PI, color='blue', label='Video - PI')
+    plt.grid(which='both', axis='both')
+    plt.xlabel('Position PI /nm')
+    plt.ylabel('Position difference /nm')
+    plt.legend()
+    
+    
+#     plt.subplot(3,2,2)
+#     plt.plot(SmarAct_common, color='green', label='SmarAct_common_scaled')
+#     plt.plot(length_PI, color='red', label='length_PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position /nm')
+#     plt.legend()
+#     plt.subplot(3,2,4)
+#     length_SmarAct_PI = SmarAct_common - length_PI
+#     plt.plot(length_SmarAct_PI, color='green', label='SmarAct - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     plt.subplot(3,2,6)
+#     plt.plot(length_PI, length_SmarAct_PI, color='green', label='SmarAct - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Position PI /nm')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     
+#     plt.figure(5)
+#     plt.plot(length_PI, length_SmarAct_PI-np.average(length_SmarAct_PI), color='green', label='SmarAct - PI')
+#     plt.plot(length_PI, length_Senson_PI-np.average(length_Senson_PI), color='blue', label='Video - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Position PI /nm')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+
 plt.show()
 
 

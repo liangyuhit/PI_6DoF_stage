@@ -14,6 +14,7 @@ encoding/Measure_scanline.py=utf-8
 encoding/Measure_step.py=utf-8
 encoding/Readout_angle_scan.py=utf-8
 encoding/Readout_length_scan.py=utf-8
+encoding/Readout_noise_numpy.py=utf-8
 encoding/Readout_step.py=utf-8
 encoding/Test_trigger_record.py=utf-8
 encoding/test.py=utf-8
