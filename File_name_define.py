@@ -9,8 +9,8 @@ Created on 17.09.2019
     Output define
 '''
 
-path = r'C:\Users\yu03\Desktop\NMC Room\6 Dof PI\Rigid\Cam\Nolinearity\10_40um_50s_right_timing'
-name = '10'
+path = r'C:\Users\yu03\Desktop\NMC Room\6 Dof PI\Rigid\Cam\Nolinearity\7__40um_50s'
+name = '7'
 
 type = '.txt'
 
