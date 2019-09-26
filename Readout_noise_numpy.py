@@ -99,32 +99,53 @@ print('CH2: ',SmarAct_CH2.shape)
 
 SmarAct_CH1 = SmarAct_CH1*1e9 ###in nm
 SmarAct_CH2 = SmarAct_CH2*1e9 ###in nm
-SmarAct_common, SmarAct_diff = (SmarAct_CH2-SmarAct_CH1)/2, -(SmarAct_CH2+SmarAct_CH1)/2
-hor_SmarAct = np.arctan(np.array(-SmarAct_diff/3.5e6))*1e6 ### 3.5mm distance
+
+SmarAct_CH1 = -SmarAct_CH1
+# SmarAct_CH2 = -SmarAct_CH2
+
+SmarAct_common, SmarAct_diff = (SmarAct_CH2+SmarAct_CH1)/2, (SmarAct_CH2-SmarAct_CH1)/2
+angle_SmarAct = np.arctan(np.array(SmarAct_diff/3.3e6))*1e6 ### 5mm distance
 
 timeline = np.arange(len(hor_length))/fs_cam/3600 ### in hour
-print(timeline)
+# print(timeline)
 '''
     Plotting
 '''
 plt.figure('Stability')
 plt.gcf().set_size_inches(18,9)
-plt.subplot(2,1,1)
 
+plt.subplot(2,2,1)
+# plt.plot(timeline, SmarAct_diff*10, color='black', label='10 x SmarAct Diff.')
 plt.plot(timeline, SmarAct_CH1, color='green', label='SmarAct CH1')
 plt.plot(timeline, SmarAct_CH2, color='cyan', label='SmarAct CH2')
 plt.plot(timeline, SmarAct_common, color='red', label='SmarAct Common')
-plt.plot(timeline, SmarAct_diff, color='black', label='SmarAct Diff.')
 plt.plot(timeline, hor_length, color='blue', label='Sensor length')
 plt.grid(which='both', axis='both')
 plt.title('length')
 plt.xlabel('Time /h')
 plt.ylabel('Position /nm')
 plt.legend()
+plt.subplot(2,2,2)
+plt.plot(timeline, SmarAct_common-hor_length, color='red', label='SmarAct - Sensor')
+# plt.plot(timeline, hor_length, color='blue', label='Sensor length')
+plt.grid(which='both', axis='both')
+plt.title('length')
+plt.xlabel('Time /h')
+plt.ylabel('Position /nm')
+plt.legend()
 
-plt.subplot(2,1,2)
+
+plt.subplot(2,2,3)
 plt.plot(timeline, hor_angle-np.average(hor_angle), color='blue', label='Sensor hor. tilt')
-plt.plot(timeline, hor_SmarAct, color='red', label='SmarAct hor. tilt')
+plt.plot(timeline, angle_SmarAct, color='red', label='SmarAct hor. tilt')
+plt.grid(which='both', axis='both')
+plt.title('Hor. Tilt')
+plt.xlabel('Time /h')
+plt.ylabel('Angle /urad')
+plt.legend()
+plt.subplot(2,2,4)
+plt.plot(timeline, angle_SmarAct-(hor_angle-np.average(hor_angle)), color='blue', label='SmarAct-Sensor')
+# plt.plot(timeline, angle_SmarAct, color='red', label='SmarAct hor. tilt')
 plt.grid(which='both', axis='both')
 plt.title('Hor. Tilt')
 plt.xlabel('Time /h')
