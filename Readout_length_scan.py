@@ -98,18 +98,18 @@ print('Video', len(hor_angle))
 '''
     Reading SmarAct
 '''
-SmarAct_CH1 = np.fromfile(SmarAct_name_1, dtype='>d')
-print('CH1: ', SmarAct_CH1.shape)
-SmarAct_CH2 = np.fromfile(SmarAct_name_2, dtype='>d')
-print('CH2: ', SmarAct_CH2.shape)
-
-SmarAct_CH1 = SmarAct_CH1[(SmarAct_CH1<-1e-200) | (SmarAct_CH1>1e-200)]
-print('CH1: ',SmarAct_CH1.shape)
-SmarAct_CH2 = SmarAct_CH2[(SmarAct_CH2<-1e-200) | (SmarAct_CH2>1e-200)]
-print('CH2: ',SmarAct_CH2.shape)
-
-SmarAct_CH1 = SmarAct_CH1*1e9 ###in nm
-SmarAct_CH2 = SmarAct_CH2*1e9 ###in nm
+# SmarAct_CH1 = np.fromfile(SmarAct_name_1, dtype='>d')
+# print('CH1: ', SmarAct_CH1.shape)
+# SmarAct_CH2 = np.fromfile(SmarAct_name_2, dtype='>d')
+# print('CH2: ', SmarAct_CH2.shape)
+# 
+# SmarAct_CH1 = SmarAct_CH1[(SmarAct_CH1<-1e-200) | (SmarAct_CH1>1e-200)]
+# print('CH1: ',SmarAct_CH1.shape)
+# SmarAct_CH2 = SmarAct_CH2[(SmarAct_CH2<-1e-200) | (SmarAct_CH2>1e-200)]
+# print('CH2: ',SmarAct_CH2.shape)
+# 
+# SmarAct_CH1 = SmarAct_CH1*1e9 ###in nm
+# SmarAct_CH2 = SmarAct_CH2*1e9 ###in nm
 
 '''
     Reading PI 6Dof
@@ -118,43 +118,43 @@ length_PI, Hor_PI, Ver_PI = Read_Data_3Ch(PI_name)
 print('PI: ', len(length_PI))
 length_PI = length_PI*1e3 ### nm
 
-'''
-    Data Alignment
-'''
-print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::50]
-SmarAct_CH2 = SmarAct_CH2[::50]
-# if 1:
-#     '''
-#         lost trigger compensation
-#     '''
-#     SmarAct_CH1 = np.insert(SmarAct_CH1, 464, (SmarAct_CH1[464]+SmarAct_CH1[463])/2)
-#     SmarAct_CH2 = np.insert(SmarAct_CH2, 464, (SmarAct_CH2[464]+SmarAct_CH2[463])/2)
-print('CH1: ', SmarAct_CH1.shape)
-print('CH2: ', SmarAct_CH2.shape)
-length_PI = length_PI
-Hor_PI = Hor_PI
-Ver_PI = Ver_PI
-# print('PI: ', len(length_PI))
-
-# SmarAct_CH1 = -SmarAct_CH1
-SmarAct_CH2 = -SmarAct_CH2
+# '''
+#     Data Alignment
+# '''
+# print('Video', len(hor_angle))
+# SmarAct_CH1 = SmarAct_CH1[::50]
+# SmarAct_CH2 = SmarAct_CH2[::50]
+# # if 1:
+# #     '''
+# #         lost trigger compensation
+# #     '''
+# #     SmarAct_CH1 = np.insert(SmarAct_CH1, 464, (SmarAct_CH1[464]+SmarAct_CH1[463])/2)
+# #     SmarAct_CH2 = np.insert(SmarAct_CH2, 464, (SmarAct_CH2[464]+SmarAct_CH2[463])/2)
+# print('CH1: ', SmarAct_CH1.shape)
+# print('CH2: ', SmarAct_CH2.shape)
+# length_PI = length_PI
+# Hor_PI = Hor_PI
+# Ver_PI = Ver_PI
+# # print('PI: ', len(length_PI))
+# 
+# # SmarAct_CH1 = -SmarAct_CH1
+# SmarAct_CH2 = -SmarAct_CH2
 
 
 
 if 1:
-#     start = 300
-#     end = 2200
-    start = 0
-    end = 4998
+    start = 300
+    end = 2200
+#     start = 200
+#     end = 1300
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
     hor_angle, hor_length, ver_angle, ver_length = hor_angle[start:end], hor_length[start:end], ver_angle[start:end], ver_length[start:end]
-    SmarAct_CH1, SmarAct_CH2 = SmarAct_CH1[start:end], SmarAct_CH2[start:end]    
+#     SmarAct_CH1, SmarAct_CH2 = SmarAct_CH1[start:end], SmarAct_CH2[start:end]    
     length_PI, Hor_PI, Ver_PI = length_PI[start:end], Hor_PI[start:end], Ver_PI[start:end]
     
-
-SmarAct_common, SmarAct_diff = (SmarAct_CH2+SmarAct_CH1)/2, (SmarAct_CH2-SmarAct_CH1)/2
-angle_SmarAct = np.arctan(np.array(SmarAct_diff/5e6))*1e6 ### 5mm distance
+# 
+# SmarAct_common, SmarAct_diff = (SmarAct_CH2+SmarAct_CH1)/2, (SmarAct_CH2-SmarAct_CH1)/2
+# angle_SmarAct = np.arctan(np.array(SmarAct_diff/5e6))*1e6 ### 5mm distance
 
 # video_length = (hor_length+ver_length)/2
 # video_length = video_length-np.average(video_length)
@@ -168,12 +168,12 @@ angle_SmarAct = np.arctan(np.array(SmarAct_diff/5e6))*1e6 ### 5mm distance
 # print('Video', len(video_length))
 # length_Senson_PI = video_length - length_PI
 
-if 0:
+if 1:
     '''
         Nonlinearity Video
     '''
     
-    length_dof = 10
+    length_dof = 100
     angle_dof = 3
     
     video_length = (hor_length+ver_length)/2
@@ -212,45 +212,45 @@ if 0:
     f_video_ver_nonlinearity_P, fft, FFT_video_ver_nonlinearity_P, phi = FFT_cal(video_ver_nonlinearity_P, (video_length_new[1]-video_length_new[0]))
     
     
-    '''
-        Nonlinearity SmarAct
-    '''
-    length_SmarAct = SmarAct_common - np.average(SmarAct_common)
-    length_SmarAct_fit_params = np.polyfit(timeline, length_SmarAct, length_dof)
-    length_SmarAct_fit_poly = np.poly1d(length_SmarAct_fit_params)
-    length_SmarAct_fitline = length_SmarAct_fit_poly(timeline)
-    length_SmarAct_nonlinearity_T = length_SmarAct - length_SmarAct_fitline
-    spline = interp1d(length_SmarAct_fitline, length_SmarAct_nonlinearity_T, kind='cubic', bounds_error=False, fill_value=0)
-    length_SmarAct_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(length_SmarAct))
-    length_SmarAct_nonlinearity_P = spline(length_SmarAct_new)
-    f_length_SmarAct_nonlinearity, fft, FFT_length_SmarAct_nonlinearity_T, phi = FFT_cal(length_SmarAct_nonlinearity_T, 1/fs)
-    f_length_SmarAct_nonlinearity_P, fft, FFT_length_SmarAct_nonlinearity_P, phi = FFT_cal(length_SmarAct_nonlinearity_P, (length_SmarAct_new[1]-length_SmarAct_new[0]))
-    
-    hor_SmarAct = angle_SmarAct - np.average(angle_SmarAct)
-    hor_SmarAct_fit_params = np.polyfit(timeline, hor_SmarAct, angle_dof)
-    hor_SmarAct_fit_poly = np.poly1d(hor_SmarAct_fit_params)
-    hor_SmarAct_fitline = hor_SmarAct_fit_poly(timeline)
-    hor_SmarAct_nonlinearity_T = hor_SmarAct - hor_SmarAct_fitline
-    spline = interp1d(length_SmarAct_fitline, hor_SmarAct_nonlinearity_T, kind='cubic', bounds_error=False, fill_value=0)
-    hor_SmarAct_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(hor_SmarAct))
-    hor_SmarAct_nonlinearity_P = spline(hor_SmarAct_new)
-    f_hor_SmarAct_nonlinearity, fft, FFT_hor_SmarAct_nonlinearity_T, phi = FFT_cal(hor_SmarAct_nonlinearity_T, 1/fs)
-    f_hor_SmarAct_nonlinearity_P, fft, FFT_hor_SmarAct_nonlinearity_P, phi = FFT_cal(hor_SmarAct_nonlinearity_P, (hor_SmarAct_new[1]-hor_SmarAct_new[0]))
-     
-    '''
-        Nonlinearity Video-SmarAct
-    '''
-    length_Senson_SmarAct = video_length - SmarAct_common
-    length_Senson_SmarAct = length_Senson_SmarAct-np.average(length_Senson_SmarAct)
-    length_Senson_SmarAct_fit_params = np.polyfit(timeline, length_Senson_SmarAct, length_dof)
-    length_Senson_SmarAct_fit_poly = np.poly1d(length_Senson_SmarAct_fit_params)
-    length_Senson_SmarAct_fitline = length_Senson_SmarAct_fit_poly(timeline)
-    length_Senson_SmarAct_nonlinearity_T = length_Senson_SmarAct - length_Senson_SmarAct_fitline
-    spline = interp1d(length_SmarAct_fitline, length_Senson_SmarAct_nonlinearity_T, kind='cubic')
-    SmarAct_length_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(SmarAct_common))
-    length_Senson_SmarAct_nonlinearity_P = spline(SmarAct_length_new)
-    f_length_Senson_SmarAct_nonlinearity, fft, FFT_length_Senson_SmarAct_nonlinearity_T, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_T, 1/fs)
-    f_length_Senson_SmarAct_nonlinearity_P, fft, FFT_length_Senson_SmarAct_nonlinearity_P, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_P, (SmarAct_length_new[1]-SmarAct_length_new[0]))
+#     '''
+#         Nonlinearity SmarAct
+#     '''
+#     length_SmarAct = SmarAct_common - np.average(SmarAct_common)
+#     length_SmarAct_fit_params = np.polyfit(timeline, length_SmarAct, length_dof)
+#     length_SmarAct_fit_poly = np.poly1d(length_SmarAct_fit_params)
+#     length_SmarAct_fitline = length_SmarAct_fit_poly(timeline)
+#     length_SmarAct_nonlinearity_T = length_SmarAct - length_SmarAct_fitline
+#     spline = interp1d(length_SmarAct_fitline, length_SmarAct_nonlinearity_T, kind='cubic', bounds_error=False, fill_value=0)
+#     length_SmarAct_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(length_SmarAct))
+#     length_SmarAct_nonlinearity_P = spline(length_SmarAct_new)
+#     f_length_SmarAct_nonlinearity, fft, FFT_length_SmarAct_nonlinearity_T, phi = FFT_cal(length_SmarAct_nonlinearity_T, 1/fs)
+#     f_length_SmarAct_nonlinearity_P, fft, FFT_length_SmarAct_nonlinearity_P, phi = FFT_cal(length_SmarAct_nonlinearity_P, (length_SmarAct_new[1]-length_SmarAct_new[0]))
+#     
+#     hor_SmarAct = angle_SmarAct - np.average(angle_SmarAct)
+#     hor_SmarAct_fit_params = np.polyfit(timeline, hor_SmarAct, angle_dof)
+#     hor_SmarAct_fit_poly = np.poly1d(hor_SmarAct_fit_params)
+#     hor_SmarAct_fitline = hor_SmarAct_fit_poly(timeline)
+#     hor_SmarAct_nonlinearity_T = hor_SmarAct - hor_SmarAct_fitline
+#     spline = interp1d(length_SmarAct_fitline, hor_SmarAct_nonlinearity_T, kind='cubic', bounds_error=False, fill_value=0)
+#     hor_SmarAct_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(hor_SmarAct))
+#     hor_SmarAct_nonlinearity_P = spline(hor_SmarAct_new)
+#     f_hor_SmarAct_nonlinearity, fft, FFT_hor_SmarAct_nonlinearity_T, phi = FFT_cal(hor_SmarAct_nonlinearity_T, 1/fs)
+#     f_hor_SmarAct_nonlinearity_P, fft, FFT_hor_SmarAct_nonlinearity_P, phi = FFT_cal(hor_SmarAct_nonlinearity_P, (hor_SmarAct_new[1]-hor_SmarAct_new[0]))
+#      
+#     '''
+#         Nonlinearity Video-SmarAct
+#     '''
+#     length_Senson_SmarAct = video_length - SmarAct_common
+#     length_Senson_SmarAct = length_Senson_SmarAct-np.average(length_Senson_SmarAct)
+#     length_Senson_SmarAct_fit_params = np.polyfit(timeline, length_Senson_SmarAct, length_dof)
+#     length_Senson_SmarAct_fit_poly = np.poly1d(length_Senson_SmarAct_fit_params)
+#     length_Senson_SmarAct_fitline = length_Senson_SmarAct_fit_poly(timeline)
+#     length_Senson_SmarAct_nonlinearity_T = length_Senson_SmarAct - length_Senson_SmarAct_fitline
+#     spline = interp1d(length_SmarAct_fitline, length_Senson_SmarAct_nonlinearity_T, kind='cubic')
+#     SmarAct_length_new = np.linspace(length_SmarAct_fitline[0], length_SmarAct_fitline[-1], num=len(SmarAct_common))
+#     length_Senson_SmarAct_nonlinearity_P = spline(SmarAct_length_new)
+#     f_length_Senson_SmarAct_nonlinearity, fft, FFT_length_Senson_SmarAct_nonlinearity_T, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_T, 1/fs)
+#     f_length_Senson_SmarAct_nonlinearity_P, fft, FFT_length_Senson_SmarAct_nonlinearity_P, phi = FFT_cal(length_Senson_SmarAct_nonlinearity_P, (SmarAct_length_new[1]-SmarAct_length_new[0]))
 
     
     
@@ -272,20 +272,20 @@ if 0:
     Hor_PI = Hor_PI - np.average(Hor_PI)
     Ver_PI = Ver_PI - np.average(Ver_PI)
 
-    '''
-        Nonlinearity SmarAct-PI
-    '''
-    length_SmarAct_PI = SmarAct_common - length_PI
-    length_SmarAct_PI = length_Senson_PI-np.average(length_Senson_PI)
-    length_SmarAct_PI_fit_params = np.polyfit(timeline, length_SmarAct_PI, length_dof)
-    length_SmarAct_PI_fit_poly = np.poly1d(length_SmarAct_PI_fit_params)
-    length_SmarAct_PI_fitline = length_SmarAct_PI_fit_poly(timeline)
-    length_SmarAct_PI_nonlinearity_T = length_SmarAct_PI - length_SmarAct_PI_fitline
-    spline = interp1d(SmarAct_common, length_SmarAct_PI_nonlinearity_T, kind='cubic')
-    length_SmarAct_PI_new = np.linspace(SmarAct_common[0], SmarAct_common[-1], num=len(SmarAct_common))
-    length_SmarAct_PI_nonlinearity_P = spline(length_SmarAct_PI_new)
-    f_length_SmarAct_PI_nonlinearity, fft, FFT_length_SmarAct_PI_nonlinearity_T, phi = FFT_cal(length_SmarAct_PI_nonlinearity_T, 1/fs)
-    f_length_SmarAct_PI_nonlinearity_P, fft, FFT_length_SmarAct_PI_nonlinearity_P, phi = FFT_cal(length_SmarAct_PI_nonlinearity_P, (length_SmarAct_PI_new[1]-length_SmarAct_PI_new[0]))
+#     '''
+#         Nonlinearity SmarAct-PI
+#     '''
+#     length_SmarAct_PI = SmarAct_common - length_PI
+#     length_SmarAct_PI = length_Senson_PI-np.average(length_Senson_PI)
+#     length_SmarAct_PI_fit_params = np.polyfit(timeline, length_SmarAct_PI, length_dof)
+#     length_SmarAct_PI_fit_poly = np.poly1d(length_SmarAct_PI_fit_params)
+#     length_SmarAct_PI_fitline = length_SmarAct_PI_fit_poly(timeline)
+#     length_SmarAct_PI_nonlinearity_T = length_SmarAct_PI - length_SmarAct_PI_fitline
+#     spline = interp1d(SmarAct_common, length_SmarAct_PI_nonlinearity_T, kind='cubic')
+#     length_SmarAct_PI_new = np.linspace(SmarAct_common[0], SmarAct_common[-1], num=len(SmarAct_common))
+#     length_SmarAct_PI_nonlinearity_P = spline(length_SmarAct_PI_new)
+#     f_length_SmarAct_PI_nonlinearity, fft, FFT_length_SmarAct_PI_nonlinearity_T, phi = FFT_cal(length_SmarAct_PI_nonlinearity_T, 1/fs)
+#     f_length_SmarAct_PI_nonlinearity_P, fft, FFT_length_SmarAct_PI_nonlinearity_P, phi = FFT_cal(length_SmarAct_PI_nonlinearity_P, (length_SmarAct_PI_new[1]-length_SmarAct_PI_new[0]))
 
 
 '''
@@ -317,28 +317,28 @@ plt.xlabel('Sample')
 plt.ylabel('Angle /urad')
 plt.legend()
 
-plt.subplot(3,3,4)
-plt.plot(SmarAct_common, color='blue', label='common')
-plt.grid(which='both', axis='both')
-plt.title('SmarAct length')
-plt.xlabel('Sample')
-plt.ylabel('Position /nm')
-plt.legend()
-plt.subplot(3,3,5)
-plt.plot(SmarAct_diff, color='blue', label='differential')
-plt.grid(which='both', axis='both')
-plt.title('SmarAct length')
-plt.xlabel('Sample')
-plt.ylabel('Position /nm')
-plt.legend()
-plt.subplot(3,3,6)
-plt.plot(SmarAct_CH2, color='blue', label='Ch2')
-plt.plot(SmarAct_CH1, color='red', label='Ch1')
-plt.grid(which='both', axis='both')
-plt.title('SmarAct length')
-plt.xlabel('Sample')
-plt.ylabel('Position /nm')
-plt.legend()
+# plt.subplot(3,3,4)
+# plt.plot(SmarAct_common, color='blue', label='common')
+# plt.grid(which='both', axis='both')
+# plt.title('SmarAct length')
+# plt.xlabel('Sample')
+# plt.ylabel('Position /nm')
+# plt.legend()
+# plt.subplot(3,3,5)
+# plt.plot(SmarAct_diff, color='blue', label='differential')
+# plt.grid(which='both', axis='both')
+# plt.title('SmarAct length')
+# plt.xlabel('Sample')
+# plt.ylabel('Position /nm')
+# plt.legend()
+# plt.subplot(3,3,6)
+# plt.plot(SmarAct_CH2, color='blue', label='Ch2')
+# plt.plot(SmarAct_CH1, color='red', label='Ch1')
+# plt.grid(which='both', axis='both')
+# plt.title('SmarAct length')
+# plt.xlabel('Sample')
+# plt.ylabel('Position /nm')
+# plt.legend()
 
 plt.subplot(3,3,7)
 plt.plot(length_PI, color='blue', label='length_PI')
@@ -367,7 +367,7 @@ figManager.window.showMaximized()
 plt.tight_layout()
 
 
-if 0:  
+if 1:  
     '''
         Length Nonlinearity
     '''
@@ -400,64 +400,64 @@ if 0:
     plt.ylabel('Position Amplitude /nm')
     plt.xlim(1e4,30)
     plt.ylim(1e-4,1)
-    plt.legend()
+    plt.legend(loc='upper left')
     
-    plt.subplot(4,3,4)
-    plt.plot(timeline, length_SmarAct, color='green', label='SmarAct_length=(ch1+ch2)/2')
-    plt.plot(timeline, length_SmarAct_fitline, color='red', label='fitting')
-    plt.grid(which='both', axis='both')
-    plt.title('SmarAct length')
-    plt.xlabel('Time /s')
-    plt.ylabel('Position /nm')
-    plt.legend()
-    plt.subplot(4,3,5)
-    plt.plot(length_SmarAct, length_SmarAct_nonlinearity_T, color='green', label='SmarAct_nonlinearity_Time')
-    plt.plot(length_SmarAct, length_SmarAct_nonlinearity_P, color='red', label='SmarAct_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.title('SmarAct Length Nonlinearity')
-    plt.xlabel('Position /nm')
-    plt.ylabel('Deviation /nm')
-    plt.legend()
-    plt.subplot(4,3,6)
-    plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_length_SmarAct_nonlinearity_T, color='green', label='SmarAct_nonlinearity_Time')
-    plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_length_SmarAct_nonlinearity_P, color='red', label='SmarAct_nonlinearity_Pos.')
-    plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_video_length_nonlinearity_P, color='blue', label='video_length_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.gca().invert_xaxis()
-    plt.title('SmarAct length Nonlinearity FFT')
-    plt.xlabel('Wavelength /nm')
-    plt.ylabel('Position Amplitude /nm')
-    plt.xlim(1e4,30)
-    plt.ylim(1e-4,1)
-    plt.legend()
-    
-    plt.subplot(4,3,7)
-    plt.plot(length_Senson_SmarAct, color='blue', label='length:Senson-SmarAct')
-    plt.plot(length_Senson_SmarAct_fitline, color='red', label='fitting')
-    plt.grid(which='both', axis='both')
-    plt.title('length:Senson-SmarAct')
-    plt.xlabel('Time /s')
-    plt.ylabel('Position /nm')
-    plt.legend()
-    plt.subplot(4,3,8)
-    plt.plot(SmarAct_common, length_Senson_SmarAct_nonlinearity_T, color='blue', label='diff_nonlinearity_Time')
-    plt.plot(SmarAct_common, length_Senson_SmarAct_nonlinearity_P, color='red', label='diff_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.title('length Nonlinearity: Senson-SmarAct')
-    plt.xlabel('Position /nm')
-    plt.ylabel('Deviation /nm')
-    plt.legend()
-    plt.subplot(4,3,9)
-    plt.loglog(1/f_length_Senson_SmarAct_nonlinearity_P, FFT_length_Senson_SmarAct_nonlinearity_T, color='blue', label='diff_nonlinearity_Time')
-    plt.loglog(1/f_length_Senson_SmarAct_nonlinearity_P, FFT_length_Senson_SmarAct_nonlinearity_P, color='red', label='diff_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.gca().invert_xaxis()
-    plt.title('length Nonlinearity FFT: Senson-SmarAct')
-    plt.xlabel('Wavelength /nm')
-    plt.ylabel('Position Amplitude /nm')
-    plt.xlim(1e4,30)
-    plt.ylim(1e-4, 1)
-    plt.legend()
+#     plt.subplot(4,3,4)
+#     plt.plot(timeline, length_SmarAct, color='green', label='SmarAct_length=(ch1+ch2)/2')
+#     plt.plot(timeline, length_SmarAct_fitline, color='red', label='fitting')
+#     plt.grid(which='both', axis='both')
+#     plt.title('SmarAct length')
+#     plt.xlabel('Time /s')
+#     plt.ylabel('Position /nm')
+#     plt.legend()
+#     plt.subplot(4,3,5)
+#     plt.plot(length_SmarAct, length_SmarAct_nonlinearity_T, color='green', label='SmarAct_nonlinearity_Time')
+#     plt.plot(length_SmarAct, length_SmarAct_nonlinearity_P, color='red', label='SmarAct_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.title('SmarAct Length Nonlinearity')
+#     plt.xlabel('Position /nm')
+#     plt.ylabel('Deviation /nm')
+#     plt.legend()
+#     plt.subplot(4,3,6)
+#     plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_length_SmarAct_nonlinearity_T, color='green', label='SmarAct_nonlinearity_Time')
+#     plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_length_SmarAct_nonlinearity_P, color='red', label='SmarAct_nonlinearity_Pos.')
+#     plt.loglog(1/f_length_SmarAct_nonlinearity_P, FFT_video_length_nonlinearity_P, color='blue', label='video_length_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.gca().invert_xaxis()
+#     plt.title('SmarAct length Nonlinearity FFT')
+#     plt.xlabel('Wavelength /nm')
+#     plt.ylabel('Position Amplitude /nm')
+#     plt.xlim(1e4,30)
+#     plt.ylim(1e-4,1)
+#     plt.legend()
+#     
+#     plt.subplot(4,3,7)
+#     plt.plot(length_Senson_SmarAct, color='blue', label='length:Senson-SmarAct')
+#     plt.plot(length_Senson_SmarAct_fitline, color='red', label='fitting')
+#     plt.grid(which='both', axis='both')
+#     plt.title('length:Senson-SmarAct')
+#     plt.xlabel('Time /s')
+#     plt.ylabel('Position /nm')
+#     plt.legend()
+#     plt.subplot(4,3,8)
+#     plt.plot(SmarAct_common, length_Senson_SmarAct_nonlinearity_T, color='blue', label='diff_nonlinearity_Time')
+#     plt.plot(SmarAct_common, length_Senson_SmarAct_nonlinearity_P, color='red', label='diff_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.title('length Nonlinearity: Senson-SmarAct')
+#     plt.xlabel('Position /nm')
+#     plt.ylabel('Deviation /nm')
+#     plt.legend()
+#     plt.subplot(4,3,9)
+#     plt.loglog(1/f_length_Senson_SmarAct_nonlinearity_P, FFT_length_Senson_SmarAct_nonlinearity_T, color='blue', label='diff_nonlinearity_Time')
+#     plt.loglog(1/f_length_Senson_SmarAct_nonlinearity_P, FFT_length_Senson_SmarAct_nonlinearity_P, color='red', label='diff_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.gca().invert_xaxis()
+#     plt.title('length Nonlinearity FFT: Senson-SmarAct')
+#     plt.xlabel('Wavelength /nm')
+#     plt.ylabel('Position Amplitude /nm')
+#     plt.xlim(1e4,30)
+#     plt.ylim(1e-4, 1)
+#     plt.legend()
      
     
     plt.subplot(4,3,10)
@@ -526,40 +526,40 @@ if 0:
     plt.title('Video horizontal angle Nonlinearity FFT')
     plt.xlabel('Wavelength /nm')
     plt.ylabel('Angle /urad')
-    plt.xlim(1e3,30)
+#     plt.xlim(1e3,30)
     plt.legend()
     
-    plt.subplot(3,3,4)
-    plt.plot(timeline, video_hor, color='blue', label='hor: Video_hor')
-    plt.plot(timeline, video_hor_fitline, color='red', label='fitting')
-    plt.plot(timeline, Hor_PI, color='black', label='PI')
-    plt.plot(timeline, hor_SmarAct, color='green', label='SmarAct')
-    plt.plot(timeline, hor_SmarAct_fitline, color='red')
-    plt.grid(which='both', axis='both')
-    plt.title('SmarAct horizontal angle')
-    plt.xlabel('Time /s')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,3,5)
-    plt.plot(length_SmarAct, hor_SmarAct_nonlinearity_T, color='green', label='SmarAct_hor_nonlinearity_Time')
-    plt.plot(length_SmarAct, hor_SmarAct_nonlinearity_P, color='red', label='SmarAct_hor_nonlinearity_Pos.')
-    plt.plot(length_SmarAct, video_hor_nonlinearity_P, color='blue', label='Video_hor_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.title('SmarAct horizontal angle Nonlinearity')
-    plt.xlabel('Position /nm')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,3,6)
-    plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_hor_SmarAct_nonlinearity_T, color='green', label='SmarAct_hor_nonlinearity_Time')
-    plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_hor_SmarAct_nonlinearity_P, color='red', label='SmarAct_hor_nonlinearity_Pos.')
-    plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_video_hor_nonlinearity_P, color='blue', label='Video_hor_nonlinearity_Pos.')
-    plt.grid(which='both', axis='both')
-    plt.gca().invert_xaxis()
-    plt.title('SmarAct horizontal angle Nonlinearity FFT')
-    plt.xlabel('Wavelength /nm')
-    plt.ylabel('Angle /urad')
-    plt.xlim(1e3,30)
-    plt.legend()
+#     plt.subplot(3,3,4)
+#     plt.plot(timeline, video_hor, color='blue', label='hor: Video_hor')
+#     plt.plot(timeline, video_hor_fitline, color='red', label='fitting')
+#     plt.plot(timeline, Hor_PI, color='black', label='PI')
+#     plt.plot(timeline, hor_SmarAct, color='green', label='SmarAct')
+#     plt.plot(timeline, hor_SmarAct_fitline, color='red')
+#     plt.grid(which='both', axis='both')
+#     plt.title('SmarAct horizontal angle')
+#     plt.xlabel('Time /s')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,3,5)
+#     plt.plot(length_SmarAct, hor_SmarAct_nonlinearity_T, color='green', label='SmarAct_hor_nonlinearity_Time')
+#     plt.plot(length_SmarAct, hor_SmarAct_nonlinearity_P, color='red', label='SmarAct_hor_nonlinearity_Pos.')
+#     plt.plot(length_SmarAct, video_hor_nonlinearity_P, color='blue', label='Video_hor_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.title('SmarAct horizontal angle Nonlinearity')
+#     plt.xlabel('Position /nm')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,3,6)
+#     plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_hor_SmarAct_nonlinearity_T, color='green', label='SmarAct_hor_nonlinearity_Time')
+#     plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_hor_SmarAct_nonlinearity_P, color='red', label='SmarAct_hor_nonlinearity_Pos.')
+#     plt.loglog(1/f_hor_SmarAct_nonlinearity_P, FFT_video_hor_nonlinearity_P, color='blue', label='Video_hor_nonlinearity_Pos.')
+#     plt.grid(which='both', axis='both')
+#     plt.gca().invert_xaxis()
+#     plt.title('SmarAct horizontal angle Nonlinearity FFT')
+#     plt.xlabel('Wavelength /nm')
+#     plt.ylabel('Angle /urad')
+#     plt.xlim(1e3,30)
+#     plt.legend()
      
     plt.subplot(3,3,7)
     plt.plot(timeline, video_ver, color='blue', label='ver: Video')
@@ -586,7 +586,7 @@ if 0:
     plt.title('Video Vertical angle Nonlinearity FFT')
     plt.xlabel('Wavelength /nm')
     plt.ylabel('Angle /urad')
-    plt.xlim(1e3,30)
+#     plt.xlim(1e3,30)
     plt.legend()
      
     figManager = plt.get_current_fig_manager()

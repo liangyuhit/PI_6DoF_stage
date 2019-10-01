@@ -26,27 +26,51 @@ STAGES = None  # connect stages to axes
 REFMODE = None  # reference the connected stages
 
 '''
-    Parameters for data recorder
+    Parameters define
 '''
-NUMVALUES = 2600  # number of data sets to record as integer
-# NUMVALUES = 600
-RECRATE = 47.6  # number of recordings per second, i.e. in Hz
+if 0: ### 50s 47.6Hz
+    NUMVALUES = 2600  # number of data sets to record as integer
+    # NUMVALUES = 600
+    RECRATE = 47.6  # number of recordings per second, i.e. in Hz
+    
+    '''
+        Parameters for Wave Generator
+    '''
+    NUMPOINTS = 30000  # number of points for one sine period as integer
+    STARTPOS = 0.0  # start position of the circular motion as float for both axes
+    AMPLITUDE = 45   # amplitude of the circular motion as float for both axes
+    # AMPLITUDE = 200
+    # if AMPLITUDE >= 50:
+    #     print('AMPLITUDE TOO LARGE')
+    #     exit()
+    OFFSET = 0
+    NUMCYLES = 1  # number of cycles for wave generator output
+    # TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
+    TABLERATE = 25
+    Data_record_Table_rate = 12 ### 47.6Hz; ~12 for TABLERATE 25; ~60 for TABLERATE 5
 
-'''
-    Parameters for Wave Generator
-'''
-NUMPOINTS = 30000  # number of points for one sine period as integer
-STARTPOS = 0.0  # start position of the circular motion as float for both axes
-AMPLITUDE = 45   # amplitude of the circular motion as float for both axes
-# AMPLITUDE = 200
-# if AMPLITUDE >= 50:
-#     print('AMPLITUDE TOO LARGE')
-#     exit()
-OFFSET = 0
-NUMCYLES = 1  # number of cycles for wave generator output
-# TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
-TABLERATE = 25
-Data_record_Table_rate = 12 ### 47.6Hz; ~12 for TABLERATE 25; ~60 for TABLERATE 5
+if 1: ### 100s 47.6Hz
+    NUMVALUES = 5100  # number of data sets to record as integer
+    # NUMVALUES = 600
+    RECRATE = 47.6  # number of recordings per second, i.e. in Hz
+    
+    '''
+        Parameters for Wave Generator
+    '''
+    NUMPOINTS = 30000  # number of points for one sine period as integer
+    STARTPOS = 0.0  # start position of the circular motion as float for both axes
+    AMPLITUDE = 45   # amplitude of the circular motion as float for both axes
+    # AMPLITUDE = 200
+    # if AMPLITUDE >= 50:
+    #     print('AMPLITUDE TOO LARGE')
+    #     exit()
+    OFFSET = 0
+    NUMCYLES = 1  # number of cycles for wave generator output
+    # TABLERATE = 1  # duration of a wave table point in multiples of servo cycle times as integer
+    TABLERATE = 50
+    Data_record_Table_rate = 6 ### 47.6Hz; ~12 for TABLERATE 25; ~60 for TABLERATE 5 ; 20 for TABLERATE 15
+
+
 
 '''
     Moving Axis define
@@ -70,12 +94,7 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     IDN = pidevice.qIDN()
     print('IDN: ', IDN)
     
-#     '''
-#         Turn off controller
-#     '''
-#     for axes in range(6):
-#         pidevice.SVO(axes=axes+1, values=False)
-    print('Servo Status: ', pidevice.qSVO())
+
     
     pidevice.WGO(wavegens, mode=[0]*len(wavegens))
     '''
@@ -88,6 +107,12 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     '''
     pidevice.SVO({'1':1,'2':1,'3':1,'4':1,'5':1,'6':1})
 #     print('Servo Status: ', pidevice.qSVO())
+    '''
+        Turn off controller
+    '''
+    for axes in range(6):
+        pidevice.SVO(axes=axes+1, values=False)
+    print('Servo Status: ', pidevice.qSVO())
     '''
         Data Recording Configuration
     '''
@@ -156,7 +181,7 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
 #     Table_rate = pidevice.qSPA(items=1, params=0x13000109)[1][318767369] ###0x13000109
 #     print(Table_rate)
 #     print(pidevice.qWTR(wavegens=1))
-    pitools.waitontarget(pidevice, '%s'%moving_axis)
+#     pitools.waitontarget(pidevice, '%s'%moving_axis)
     print('Servo Status: ', pidevice.qSVO())
      
     '''
