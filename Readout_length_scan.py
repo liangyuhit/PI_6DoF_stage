@@ -82,11 +82,11 @@ hor_angle = (V_x-Lamda*hor_f_fit_set/2)*1e6 ### urad
 hor_length = np.unwrap(hor_phase_centers)/4/np.pi*Lamda*1e9 ### nm
 ver_angle = (V_y-Lamda*ver_f_fit_set/2)*1e6 ### urad
 ver_length = np.unwrap(ver_phase_centers)/4/np.pi*Lamda*1e9 ### nm
-# if 1:
+# if 0:
 #     '''
 #         lost trigger compensation
 #     '''
-#     missing_pos = [705, 4655]
+#     missing_pos = [3688,]
 #     for factor in missing_pos:
 # #     factor = 946
 #         hor_angle = np.insert(hor_angle, factor, (hor_angle[factor]+hor_angle[factor-1])/2)
@@ -143,8 +143,8 @@ length_PI = length_PI*1e3 ### nm
 
 
 if 1:
-    start = 300
-    end = 2200
+    start = 500
+    end = 3500
 #     start = 200
 #     end = 1300
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
@@ -173,7 +173,7 @@ if 1:
         Nonlinearity Video
     '''
     
-    length_dof = 100
+    length_dof =100
     angle_dof = 3
     
     video_length = (hor_length+ver_length)/2
@@ -399,7 +399,7 @@ if 1:
     plt.xlabel('Wavelength /nm')
     plt.ylabel('Position Amplitude /nm')
     plt.xlim(1e4,30)
-    plt.ylim(1e-4,1)
+    plt.ylim(1e-3,1)
     plt.legend(loc='upper left')
     
 #     plt.subplot(4,3,4)
@@ -485,7 +485,7 @@ if 1:
     plt.xlabel('Wavelength /nm')
     plt.ylabel('Position Amplitude /nm')
     plt.xlim(1e4,30)
-    plt.ylim(1e-4, 1)
+    plt.ylim(1e-3, 1)
     plt.legend()
      
      
@@ -593,67 +593,67 @@ if 1:
     figManager.window.showMaximized()
     plt.tight_layout()
     
-if 0:
-    
-    length_PI = length_PI - np.average(length_PI)
-    
-    video_length = (hor_length+ver_length)/2
-    video_length = video_length-np.average(video_length)
-    video_length_scaled = video_length * (np.max(length_PI)-np.min(length_PI))/(np.max(video_length)-np.min(video_length))
-    video_length_scaled = video_length_scaled - np.average(video_length_scaled)
-    length_Senson_PI_scaled = video_length_scaled - length_PI
-    
-    SmarAct_common_scaled = SmarAct_common * (np.max(length_PI)-np.min(length_PI))/(np.max(SmarAct_common)-np.min(SmarAct_common))
-    SmarAct_common_scaled = SmarAct_common_scaled - np.average(SmarAct_common_scaled)
-    length_SmarAct_PI_scaled = SmarAct_common_scaled - length_PI
-    
-    plt.figure('Ellipse')
-    plt.gcf().set_size_inches(18,9)
-    
-    plt.subplot(3,2,1)
-    plt.plot(video_length_scaled, color='blue', label='Video_length(scaled)')
-    plt.plot(length_PI, color='black', label='length_PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Samples')
-    plt.ylabel('Position /nm')
-    plt.legend()
-    plt.subplot(3,2,3)
-    plt.plot(length_Senson_PI_scaled, color='blue', label='Video - PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Samples')
-    plt.ylabel('Position difference /nm')
-    plt.legend()
-    plt.subplot(3,2,5)
-    plt.plot(length_PI, length_Senson_PI_scaled, color='blue', label='Video - PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Position PI /nm')
-    plt.ylabel('Position difference /nm')
-    plt.legend()
-    
-    plt.subplot(3,2,2)
-    plt.plot(SmarAct_common_scaled, color='green', label='SmarAct_common_scaled')
-    plt.plot(length_PI, color='black', label='length_PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Samples')
-    plt.ylabel('Position /nm')
-    plt.legend()
-    plt.subplot(3,2,4)
-    plt.plot(length_SmarAct_PI_scaled, color='green', label='SmarAct - PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Samples')
-    plt.ylabel('Position difference /nm')
-    plt.legend()
-    plt.subplot(3,2,6)
-    plt.plot(length_PI, length_SmarAct_PI_scaled, color='green', label='SmarAct - PI')
-    plt.plot(length_PI, length_Senson_PI_scaled, color='blue', label='Video - PI')
-    plt.grid(which='both', axis='both')
-    plt.xlabel('Position PI /nm')
-    plt.ylabel('Position difference /nm')
-    plt.legend()
-    
-    figManager = plt.get_current_fig_manager()
-    figManager.window.showMaximized()
-    plt.tight_layout()
+# if 0:
+#     
+#     length_PI = length_PI - np.average(length_PI)
+#     
+#     video_length = (hor_length+ver_length)/2
+#     video_length = video_length-np.average(video_length)
+#     video_length_scaled = video_length * (np.max(length_PI)-np.min(length_PI))/(np.max(video_length)-np.min(video_length))
+#     video_length_scaled = video_length_scaled - np.average(video_length_scaled)
+#     length_Senson_PI_scaled = video_length_scaled - length_PI
+#     
+#     SmarAct_common_scaled = SmarAct_common * (np.max(length_PI)-np.min(length_PI))/(np.max(SmarAct_common)-np.min(SmarAct_common))
+#     SmarAct_common_scaled = SmarAct_common_scaled - np.average(SmarAct_common_scaled)
+#     length_SmarAct_PI_scaled = SmarAct_common_scaled - length_PI
+#     
+#     plt.figure('Ellipse')
+#     plt.gcf().set_size_inches(18,9)
+#     
+#     plt.subplot(3,2,1)
+#     plt.plot(video_length_scaled, color='blue', label='Video_length(scaled)')
+#     plt.plot(length_PI, color='black', label='length_PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position /nm')
+#     plt.legend()
+#     plt.subplot(3,2,3)
+#     plt.plot(length_Senson_PI_scaled, color='blue', label='Video - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     plt.subplot(3,2,5)
+#     plt.plot(length_PI, length_Senson_PI_scaled, color='blue', label='Video - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Position PI /nm')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     
+#     plt.subplot(3,2,2)
+#     plt.plot(SmarAct_common_scaled, color='green', label='SmarAct_common_scaled')
+#     plt.plot(length_PI, color='black', label='length_PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position /nm')
+#     plt.legend()
+#     plt.subplot(3,2,4)
+#     plt.plot(length_SmarAct_PI_scaled, color='green', label='SmarAct - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     plt.subplot(3,2,6)
+#     plt.plot(length_PI, length_SmarAct_PI_scaled, color='green', label='SmarAct - PI')
+#     plt.plot(length_PI, length_Senson_PI_scaled, color='blue', label='Video - PI')
+#     plt.grid(which='both', axis='both')
+#     plt.xlabel('Position PI /nm')
+#     plt.ylabel('Position difference /nm')
+#     plt.legend()
+#     
+#     figManager = plt.get_current_fig_manager()
+#     figManager.window.showMaximized()
+#     plt.tight_layout()
 
 plt.show()
 
