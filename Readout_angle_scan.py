@@ -124,8 +124,8 @@ length_PI = length_PI*1e3 ### nm
     Data Alignment
 '''
 print('Video', len(hor_angle))
-SmarAct_CH1 = SmarAct_CH1[::66]
-SmarAct_CH2 = SmarAct_CH2[::66]
+SmarAct_CH1 = SmarAct_CH1[::50]
+SmarAct_CH2 = SmarAct_CH2[::50]
 
 # if 1:
 #     '''
@@ -142,14 +142,14 @@ Hor_PI = Hor_PI
 Ver_PI = Ver_PI
 # print('PI: ', len(length_PI))
 
-SmarAct_CH1 = -SmarAct_CH1
-# SmarAct_CH2 = -SmarAct_CH2
+# SmarAct_CH1 = -SmarAct_CH1
+SmarAct_CH2 = -SmarAct_CH2
 
 
 
 if 1:
-    start = 0
-    end = 5000
+    start = 300
+    end = 2200
 #     start = 0
 #     end = 4998
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
@@ -162,13 +162,13 @@ SmarAct_common, SmarAct_diff = (SmarAct_CH2+SmarAct_CH1)/2, (SmarAct_CH2-SmarAct
 beam_distance = 3.3e6 ### 3.4mm distance
 angle_SmarAct = np.arctan(np.array(SmarAct_diff/beam_distance))*1e6 
 
-if 0:
+if 1:
     '''
         Nonlinearity Video
     '''
     
-    length_dof = 6
-    angle_dof = 6
+    length_dof = 4
+    angle_dof = 3
     
     video_length = (hor_length+ver_length)/2
     video_length = video_length-np.average(video_length)
@@ -394,7 +394,7 @@ figManager.window.showMaximized()
 plt.tight_layout()
 
 
-if 0:  
+if 1:  
     '''
         Length Nonlinearity
     '''
@@ -438,6 +438,7 @@ if 0:
     plt.ylabel('Position /nm')
     plt.legend()
     plt.subplot(4,3,5)
+    plt.plot(timeline, video_length_nonlinearity_T, color='blue', label='video_length_nonlinearity')
     plt.plot(timeline, length_SmarAct_nonlinearity_T, color='green', label='SmarAct_nonlinearity')
 #     plt.plot(length_SmarAct, length_SmarAct_nonlinearity_P, color='red', label='SmarAct_nonlinearity_Pos.')
     plt.grid(which='both', axis='both')
@@ -591,87 +592,87 @@ if 0:
     plt.tight_layout()
     
     
-if 1:
-    '''
-        Ramp Ellipse
-    '''
-    
-    Hor_PI = Hor_PI - np.average(Hor_PI)
-    Ver_PI = Ver_PI - np.average(Ver_PI)
-    
-    video_hor = hor_angle
-    video_hor = video_hor - np.average(video_hor)
-    video_hor_scaled = video_hor * (np.max(Hor_PI)-np.min(Hor_PI))/(np.max(video_hor)-np.min(video_hor))
-    hor_video_PI_scaled = video_hor_scaled - Hor_PI
-    
-    video_ver = ver_angle
-    video_ver = video_ver - np.average(video_ver)
-    video_ver_scaled = video_ver * (np.max(Ver_PI)-np.min(Ver_PI))/(np.max(video_ver)-np.min(video_ver))
-    ver_video_PI_scaled = video_ver_scaled - Ver_PI
-    
-    
-    hor_SmarAct = -angle_SmarAct
-    hor_SmarAct = hor_SmarAct - np.average(hor_SmarAct)
-    hor_SmarAct = hor_SmarAct - np.average(hor_SmarAct)
-    hor_SmarAct_scaled = 1.0 * hor_SmarAct * (np.max(Hor_PI)-np.min(Hor_PI))/(np.max(hor_SmarAct)-np.min(hor_SmarAct))
-    hor_SmarAct_PI_scaled = hor_SmarAct_scaled - Hor_PI
-    
-    
-    plt.figure('Ellipse')
-    plt.gcf().set_size_inches(18,9)
-    
-    plt.subplot(3,2,1)
-    plt.plot(hor_SmarAct_scaled, color='green', label='SmarAct_hor(scaled)')
-    plt.plot(video_hor_scaled, color='blue', label='Video_hor(scaled)')
-    plt.plot(Hor_PI, color='black', label='PI_hor')
-    plt.grid(which='both', axis='both')
-    plt.title('Hor. angle')
-    plt.xlabel('Samples')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,2,3)
-    plt.plot(hor_SmarAct_PI_scaled, color='green', label='SmarAct_hor(scaled)-PI')
-    plt.plot(hor_video_PI_scaled, color='blue', label='Video_hor(scaled)-PI')
-    plt.grid(which='both', axis='both')
-    plt.title('Hor. angle')
-    plt.xlabel('Samples')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,2,5)
-    plt.plot(Hor_PI, hor_SmarAct_PI_scaled, color='green', label='SmarAct_hor(scaled)-PI')
-    plt.plot(Hor_PI, hor_video_PI_scaled, color='blue', label='Video_hor(scaled)-PI')
-    plt.grid(which='both', axis='both')
-    plt.title('Hor. angle')
-    plt.xlabel('PI Angle /urad')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-
-    
-    plt.subplot(3,2,2)
-    plt.plot(video_ver_scaled, color='red', label='Video_ver(scaled)')
-    plt.plot(Ver_PI, color='black', label='PI_ver')
-    plt.grid(which='both', axis='both')
-    plt.title('Ver. angle')
-    plt.xlabel('Samples')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,2,4)
-    plt.plot(ver_video_PI_scaled, color='red', label='Video-PI_ver(scaled)')
-    plt.grid(which='both', axis='both')
-    plt.title('Ver. angle')
-    plt.xlabel('Samples')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-    plt.subplot(3,2,6)
-    plt.plot(Ver_PI, ver_video_PI_scaled, color='red', label='Video-PI_ver(scaled)')
-    plt.grid(which='both', axis='both')
-    plt.title('Ver. angle')
-    plt.xlabel('PI Angle /urad')
-    plt.ylabel('Angle /urad')
-    plt.legend()
-
-    figManager = plt.get_current_fig_manager()
-    figManager.window.showMaximized()
-    plt.tight_layout()
+# if 0:
+#     '''
+#         Ramp Ellipse
+#     '''
+#     
+#     Hor_PI = Hor_PI - np.average(Hor_PI)
+#     Ver_PI = Ver_PI - np.average(Ver_PI)
+#     
+#     video_hor = hor_angle
+#     video_hor = video_hor - np.average(video_hor)
+#     video_hor_scaled = video_hor * (np.max(Hor_PI)-np.min(Hor_PI))/(np.max(video_hor)-np.min(video_hor))
+#     hor_video_PI_scaled = video_hor_scaled - Hor_PI
+#     
+#     video_ver = ver_angle
+#     video_ver = video_ver - np.average(video_ver)
+#     video_ver_scaled = video_ver * (np.max(Ver_PI)-np.min(Ver_PI))/(np.max(video_ver)-np.min(video_ver))
+#     ver_video_PI_scaled = video_ver_scaled - Ver_PI
+#     
+#     
+#     hor_SmarAct = -angle_SmarAct
+#     hor_SmarAct = hor_SmarAct - np.average(hor_SmarAct)
+#     hor_SmarAct = hor_SmarAct - np.average(hor_SmarAct)
+#     hor_SmarAct_scaled = 1.0 * hor_SmarAct * (np.max(Hor_PI)-np.min(Hor_PI))/(np.max(hor_SmarAct)-np.min(hor_SmarAct))
+#     hor_SmarAct_PI_scaled = hor_SmarAct_scaled - Hor_PI
+#     
+#     
+#     plt.figure('Ellipse')
+#     plt.gcf().set_size_inches(18,9)
+#     
+#     plt.subplot(3,2,1)
+#     plt.plot(hor_SmarAct_scaled, color='green', label='SmarAct_hor(scaled)')
+#     plt.plot(video_hor_scaled, color='blue', label='Video_hor(scaled)')
+#     plt.plot(Hor_PI, color='black', label='PI_hor')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Hor. angle')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,2,3)
+#     plt.plot(hor_SmarAct_PI_scaled, color='green', label='SmarAct_hor(scaled)-PI')
+#     plt.plot(hor_video_PI_scaled, color='blue', label='Video_hor(scaled)-PI')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Hor. angle')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,2,5)
+#     plt.plot(Hor_PI, hor_SmarAct_PI_scaled, color='green', label='SmarAct_hor(scaled)-PI')
+#     plt.plot(Hor_PI, hor_video_PI_scaled, color='blue', label='Video_hor(scaled)-PI')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Hor. angle')
+#     plt.xlabel('PI Angle /urad')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+# 
+#     
+#     plt.subplot(3,2,2)
+#     plt.plot(video_ver_scaled, color='red', label='Video_ver(scaled)')
+#     plt.plot(Ver_PI, color='black', label='PI_ver')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Ver. angle')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,2,4)
+#     plt.plot(ver_video_PI_scaled, color='red', label='Video-PI_ver(scaled)')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Ver. angle')
+#     plt.xlabel('Samples')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+#     plt.subplot(3,2,6)
+#     plt.plot(Ver_PI, ver_video_PI_scaled, color='red', label='Video-PI_ver(scaled)')
+#     plt.grid(which='both', axis='both')
+#     plt.title('Ver. angle')
+#     plt.xlabel('PI Angle /urad')
+#     plt.ylabel('Angle /urad')
+#     plt.legend()
+# 
+#     figManager = plt.get_current_fig_manager()
+#     figManager.window.showMaximized()
+#     plt.tight_layout()
 
 plt.show()
