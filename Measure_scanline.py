@@ -107,11 +107,11 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
     '''
     pidevice.SVO({'1':1,'2':1,'3':1,'4':1,'5':1,'6':1})
 #     print('Servo Status: ', pidevice.qSVO())
-#     '''
-#         Turn off controller
-#     '''
-#     for axes in range(6):
-#         pidevice.SVO(axes=axes+1, values=False)
+    '''
+        Turn off controller
+    '''
+    for axes in range(6):
+        pidevice.SVO(axes=axes+1, values=False)
     print('Servo Status: ', pidevice.qSVO())
     '''
         Data Recording Configuration
