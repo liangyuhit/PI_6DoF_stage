@@ -38,7 +38,7 @@ RECRATE = 50  # number of recordings per second, i.e. in Hz
 '''
 ### 1=x,2=y,3=z_rot,4=z,5=x_rot,6=y_rot
 
-moving_axis = 5
+moving_axis = 2
 
 wavegens = (1, 2, 3, 4, 5, 6)
 wavetables = (1, 2, 3, 4, 5, 6)
@@ -61,6 +61,12 @@ with GCSDevice(CONTROLLERNAME) as pidevice:
         Turn on control loop
     '''
     pidevice.SVO({'1':1,'2':1,'3':1,'4':1,'5':1,'6':1})
+    '''
+        Turn off controller
+    '''
+    for axes in range(6):
+        pidevice.SVO(axes=axes+1, values=False)
+    print('Servo Status: ', pidevice.qSVO())
     
     '''
         Data Recording Configuration
@@ -135,7 +141,7 @@ out_str = ['%f, %f, %f\n' %(y_pos[i], z_rot[i], x_rot[i]) for i in range(NUMVALU
 '''
     Output
 '''
-Export_Data(PI_name, header, out_str)
+# Export_Data(PI_name, header, out_str)
 print('TXT file saved')
 
 t = np.linspace(0, samp_time, num=n_data)
