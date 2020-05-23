@@ -148,7 +148,7 @@ SmarAct_CH2 = -SmarAct_CH2
 
 if 1:
     start = 300
-    end = 2200
+    end = 1200
 #     start = 200
 #     end = 1300
     timeline = np.linspace(0, (end-start)/fs, num=(end-start))
